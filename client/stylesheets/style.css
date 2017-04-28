@@ -1,0 +1,86 @@
+html {
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: #e0ffff;
+  color: #2222dd;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.graph-container {
+    width: 100%;
+    height: 350px;
+}
+
+.chart-legend {
+    display: none;
+}
+
+.item,
+.chart-tooltip {
+    font-family: 'OpenSans', sans-serif;
+    color: #223344;
+}
+
+.u-full-width {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.title {
+    background: #24C6DC;
+    background: -webkit-linear-gradient(to left, #778899, #483D8B);
+    background: linear-gradient(310deg, #778899, #483D8B);
+    text-align: center;
+    padding-top: 2em;
+    padding-bottom: 2em;
+}
+
+.title h1 {
+    margin: 0;
+    padding: 0;
+    color: #cecece;
+}
+
+img {
+    /*border-radius: 4px;
+    margin: auto;
+    display: block;*/
+    width: 100%;
+}
+
+div.polaroid {
+    width: 25%;
+    display: inline-block;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin: auto;
+    margin-bottom: 25px;
+}
+
+div.container {
+    text-align: center;
+    padding: 10px 20px;
+    color: #000;
+}
+
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+div.explanation {
+    text-align: center;
+    color: black;
+    font-family: Monospace;
+    font-size: 1.5em;
+}
+

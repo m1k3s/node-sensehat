@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>RPi3 - Raspberry Pi Server</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type: "text/css" href="stylesheets/style.css">
+        <link rel="stylesheet" type: "text/css" href="scripts/n3-charts/build/LineChart.css">
+        <script src="scripts/angular/angular.min.js"></script>
+        <script type="text/javascript" src="javascripts/app.js"> </script>
+        <script src="scripts/d3/d3.min.js"></script>
+        <script src="scripts/n3-charts/build/LineChart.min.js"></script>
+    </head>
+    <body ng-app="rpi3" ng-controller='rpi3Ctrl'>
+        <div ng-if='isLoaded'> <!-- only load div when the http response is complete -->
+            <div class="u-full-width"> <!-- title bar -->
+                <div class="title"><h1>RPi3 - Raspberry Pi Server</h1></a></div>
+            </div>
+            <center><h3>Temperature (&#8457;)</h3></center>
+            <div class='graph-container'>
+                <linechart data="data" options="options0"></linechart>
+            </div><br><hr>
+            <center><h3>Relative Humidity (%)</h3></center>
+            <div class='graph-container'>
+                <linechart data="data" options="options1"></linechart>
+            </div><br><hr>
+            <center><h3>Barometric Pressure (milliBars)</h3></center>
+            <div class='graph-container'>
+                <linechart data="data" options="options2"></linechart>
+            </div><br><hr>
+            <div class='container'>
+                <div class='polaroid' align: 'center'>
+                    <img src="images/rpi3-ports.png" alt="Raspberry Pi">
+                    <div class='container'>
+                        <p>Raspberry Pi ports view</p>
+                    </div>
+                </div>
+                <div class='polaroid' align: 'center'>
+                    <img src="images/rpi3-server.png" alt="Raspberry Pi">
+                    <div class='container'>
+                        <p>Raspberry Pi Server</p>
+                    </div>
+                </div>
+                <div class='polaroid' align: 'center'>
+                    <img src="images/rpi3-sensehat.png" alt="Raspberry Pi">
+                    <div class='container'>
+                        <p>Raspberry Pi sense hat</p>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class='explanation'>
+             <p>This server is a Raspberry Pi 3 with a sense-hat and a WD 314Gb PiDrive.
+             The root file system is on the PiDrive.</p>
+            </div>
+        </div>
+    </body>
+</html>
