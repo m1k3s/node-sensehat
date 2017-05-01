@@ -116,7 +116,7 @@ app.controller('rpi3Ctrl', function($scope, dataService) {
             }
         }
     };
-    
+   
 });
 
 

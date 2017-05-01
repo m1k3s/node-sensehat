@@ -7,8 +7,10 @@
         <link rel="stylesheet" type: "text/css" href="scripts/n3-charts/build/LineChart.css">
         <script src="scripts/angular/angular.min.js"></script>
         <script type="text/javascript" src="javascripts/app.js"> </script>
+        <script type="text/javascript" src="javascripts/buttonFunctions.js"></script>
         <script src="scripts/d3/d3.min.js"></script>
         <script src="scripts/n3-charts/build/LineChart.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </head>
     <body ng-app="rpi3" ng-controller='rpi3Ctrl'>
         <div ng-if='isLoaded'> <!-- only load div when the http response is complete -->
@@ -27,7 +29,7 @@
             <div class='graph-container'>
                 <linechart data="data" options="options2"></linechart>
             </div><br><hr>
-            <div class='container'>
+            <div class='container'> <!-- picture div -->
                 <div class='polaroid' align: 'center'>
                     <img src="images/rpi3-ports.png" alt="Raspberry Pi">
                     <div class='container'>
@@ -48,10 +50,37 @@
                 </div>
             </div>
             <div class="clearfix"></div>
-            <div class='explanation'>
-             <p>This server is a Raspberry Pi 3 with a sense-hat and a WD 314Gb PiDrive.
-             The root file system is on the PiDrive.</p>
-            </div>
+            <div class='explanation'> <!-- server summary paragraph -->
+             <p>
+             This site is powered by a Raspberry Pi 3 with a sense-hat and a WD 314Gb PiDrive.
+             The root file system is on the PiDrive. The boot files are on the Micro SD
+             card. The Raspberry Pi 3 uses a Broadcom BCM2837 SOC, with a 1.2 GHZ quad-core ARM
+             Cortex A53 (ARMv8 Instruction Set) CPU, a Broadcom VideoCore IV @ 400 MHz GPU, 
+             1 GB LPDDR2-900 SDRAM. 4 USB ports, a 10/100 MBPS RJ45 Ethernet port with 802.11n
+             Wireless LAN and Bluetooth 4.0. The Pi also has 40 GPIO pins, a full HDMI port, a
+             combined 3.5mm audio jack and composite video, camera interface (CSI), and a display
+             interface (DSI).
+             </p>
+            </div><hr>
+            <div class='container'>
+                <div class='information' id='orientation'>Current Orientation: N/A</div>
+                <div class='information' id='loadavg'>Server Load: N/A</div>
+                <p>Execute functions on the server</p>
+                <div class='btn-group'>
+                    <button class="button button-shadow" onclick="doRainbow()">Rainbow</button>
+                    <!-- button class="button button-shadow" onclick="getOrientation()">Orientation</button>
+                    <button class="button button-shadow" onclick="getLoadAvg()">Load Avg</button>
+                    <button class="button button-shadow" onclick="notImplemented()">Another</button -->
+                </div>
+            </div><hr>
         </div>
+        <script>
+        // refresh the load avg every 10 seconds
+        $(document).ready( function () {
+            getLoadAvg();
+            getOrientation();
+        });
+        setInterval(getLoadAvg, 10000);
+        </script>
     </body>
 </html>
