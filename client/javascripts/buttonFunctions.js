@@ -35,3 +35,28 @@ function getLoadAvg() {
     });
 }
 
+function getServerInfo() {
+    $.getJSON("/serverinfo", function(result) {
+        console.log(result);
+        let one = result.serverinfo.loadavg.one;
+        let five = result.serverinfo.loadavg.five;
+        let fifteen = result.serverinfo.loadavg.fifteen;
+        let str0 = "Server Load: " + one + ", " + five + ", " + fifteen;
+
+        let pitch = (result.serverinfo.imu.pitch).toLocaleString('en-US', {minimumFractionDigits: 2});
+        let roll = (result.serverinfo.imu.roll).toLocaleString('en-US', {minimumFractionDigits: 2});
+        let yaw = (result.serverinfo.imu.yaw).toLocaleString('en-US', {minimumFractionDigits: 2});
+        let str1 = "Current Orientation: pitch: " + pitch + "&deg;, roll: " + roll + "&deg;, yaw: " + yaw + "&deg;";
+
+        let sys = result.serverinfo.node.sys;
+        let node = result.serverinfo.node.node;
+        let kernel = result.serverinfo.node.kernel;
+        let march = result.serverinfo.node.march;
+        let str2 = node + ", " + sys + " " + kernel + " " + march;
+        document.getElementById("banner").innerHTML = str2;
+        document.getElementById("orientation").innerHTML = str1;
+        document.getElementById("loadavg").innerHTML = str0;
+    });
+}
+
+

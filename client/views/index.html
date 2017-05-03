@@ -29,6 +29,7 @@
             <div class='graph-container'>
                 <linechart data="data" options="options2"></linechart>
             </div><br><hr>
+            <p class="colorful">Polaroids</p>
             <div class='container'> <!-- picture div -->
                 <div class='polaroid' align: 'center'>
                     <img src="images/rpi3-ports.png" alt="Raspberry Pi">
@@ -63,8 +64,9 @@
              </p>
             </div><hr>
             <div class='container'>
-                <div class='information' id='orientation'>Current Orientation: N/A</div>
-                <div class='information' id='loadavg'>Server Load: N/A</div>
+                <div class='information' id='banner'>Waiting...</div>
+                <div class='information' id='orientation'>Current Orientation: Waiting...</div>
+                <div class='information' id='loadavg'>Server Load: Waiting...</div>
                 <p>Execute functions on the server</p>
                 <div class='btn-group'>
                     <button class="button button-shadow" onclick="doRainbow()">Rainbow</button>
@@ -77,10 +79,12 @@
         <script>
         // refresh the load avg every 10 seconds
         $(document).ready( function () {
-            getLoadAvg();
-            getOrientation();
+            getServerInfo();
+            //getLoadAvg();
+            //getOrientation();
         });
-        setInterval(getLoadAvg, 10000);
+        //setInterval(getLoadAvg, 10000);
+        setInterval(getServerInfo, 10000);
         </script>
     </body>
 </html>

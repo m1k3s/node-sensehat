@@ -74,6 +74,20 @@ router.get('/loadavg', function (req, res, next) {
     });
 });
 
+router.get('/serverinfo', function (req, res, next) {
+    let results = '';
+    pyshell = new PythonShell('getserverinfo.py', {mode: 'json'});
+
+    pyshell.on('message', function (message) {
+        results = message;
+    });
+
+    pyshell.end(function(err) {
+        if (err) throw err;
+        console.log('finished getting server info');
+        return res.json(results);
+    });
+});
 
 //router.post('/db/env_sensors', function(req, res, next) {
 //    const results = [];
