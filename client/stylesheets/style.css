@@ -129,3 +129,10 @@ div.information {
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
+div.hostname {
+    text-align: center;
+    color: blue;
+    font-size: 2em;
+}
+

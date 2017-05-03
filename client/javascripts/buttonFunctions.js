@@ -52,7 +52,9 @@ function getServerInfo() {
         let node = result.serverinfo.node.node;
         let kernel = result.serverinfo.node.kernel;
         let march = result.serverinfo.node.march;
-        let str2 = node + ", " + sys + " " + kernel + " " + march;
+        let str2 = sys + " " + kernel + " " + march;
+        let str3 = "== " + node + " ==";
+        document.getElementById("host").innerHTML = str3;
         document.getElementById("banner").innerHTML = str2;
         document.getElementById("orientation").innerHTML = str1;
         document.getElementById("loadavg").innerHTML = str0;
