@@ -13,21 +13,25 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </head>
     <body ng-app="rpi3" ng-controller='rpi3Ctrl'>
-        <div ng-if='isLoaded'> <!-- only load div when the http response is complete -->
+        <div ng-if='isLoaded && isLoaded2'> <!-- conditional load -->
             <div class="u-full-width"> <!-- title bar -->
                 <div class="title"><h1>RPi3 - Raspberry Pi Server</h1></a></div>
             </div>
             <center><h3>Temperature (&#8457;)</h3></center>
             <div class='graph-container'>
-                <linechart data="data" options="options0"></linechart>
+                <linechart data="data0" options="options0"></linechart>
             </div><br><hr>
             <center><h3>Relative Humidity (%)</h3></center>
             <div class='graph-container'>
-                <linechart data="data" options="options1"></linechart>
+                <linechart data="data0" options="options1"></linechart>
             </div><br><hr>
             <center><h3>Barometric Pressure (milliBars)</h3></center>
             <div class='graph-container'>
-                <linechart data="data" options="options2"></linechart>
+                <linechart data="data0" options="options2"></linechart>
+            </div><br><hr>
+            <center><h3>Load Averages</h3></center>
+            <div class='graph-container'>
+                <linechart data="data1" options="options3"></linechart>
             </div><br><hr>
             <p class="colorful">Polaroids</p>
             <div class='container'> <!-- picture div -->
@@ -71,9 +75,9 @@
                 <p>Execute functions on the server</p>
                 <div class='btn-group'>
                     <button class="button button-shadow" onclick="doRainbow()">Rainbow</button>
-                    <!-- button class="button button-shadow" onclick="getOrientation()">Orientation</button>
-                    <button class="button button-shadow" onclick="getLoadAvg()">Load Avg</button>
-                    <button class="button button-shadow" onclick="notImplemented()">Another</button -->
+                    <button class="button button-shadow" onclick="notImplemented()">Nada</button>
+                    <button class="button button-shadow" onclick="notImplemented()">Nothin'</button>
+                    <button class="button button-shadow" onclick="notImplemented()">Nope</button>
                 </div>
             </div><hr>
         </div>
@@ -81,10 +85,7 @@
         // refresh the load avg every 10 seconds
         $(document).ready( function () {
             getServerInfo();
-            //getLoadAvg();
-            //getOrientation();
         });
-        //setInterval(getLoadAvg, 10000);
         setInterval(getServerInfo, 10000);
         </script>
     </body>
