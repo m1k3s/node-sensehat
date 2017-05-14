@@ -1,13 +1,13 @@
-html {
-  font-family: sans-serif;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+html, body {
+    height: 100%;
 }
 
 body {
-  margin: 0;
-  background: #e0ffff;
-  color: #2222dd;
+    font: 14px/1 'Open Sans', sans-serif;
+    color: #555;
+    background: #ccc;
 }
 
 a {
@@ -29,10 +29,11 @@ a {
     color: #223344;
 }
 
-/*.chart
+/* adjust the line thickness of the chart */
+.chart
 .line-series path {
-    stroke-width: 2px;
-}*/
+    stroke-width: 1px;
+}
 
 .u-full-width {
     width: 100%;
@@ -41,8 +42,8 @@ a {
 
 .title {
     background: #24C6DC;
-    background: -webkit-linear-gradient(to left, #778899, #483D8B);
-    background: linear-gradient(310deg, #778899, #483D8B);
+    background: -webkit-linear-gradient(to left, #00bfff, #000080);
+    background: linear-gradient(310deg, #00bfff, #000080);
     text-align: center;
     padding-top: 2em;
     padding-bottom: 2em;
@@ -51,7 +52,7 @@ a {
 .title h1 {
     margin: 0;
     padding: 0;
-    color: #cecece;
+    color: white;
 }
 
 img {
@@ -59,17 +60,22 @@ img {
 }
 
 div.polaroid {
-    width: 25%;
+    width: 24.99999%;
     display: inline-block;
     background-color: white;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 5px;
     margin: auto;
     margin-left: 3%;
     margin-bottom: 25px;
 }
 
+img:hover {
+    box-shadow: 0 0 3px 2px rgba(192, 0, 0, 0.5);
+}
+
 p.colorful {
-    color: #22ee99;
+    color: #a52a2a;
     text-align: center;
     font-size: 2.5em;
     font-weight: bold;
@@ -90,6 +96,14 @@ div.container {
     color: #000;
 }
 
+div.serverinfo {
+    text-align: center;
+    padding: 10px 20px;
+    color: #000;
+    border-style: inset;
+    background: #ddd;
+}
+
 .clearfix:after {
     content: "";
     display: table;
@@ -101,10 +115,11 @@ div.explanation {
     color: black;
     font-family: Monospace;
     font-size: 1.5em;
-    margin-left: 35px;
-    margin-right: 35px;
+    margin: auto;
     margin-top: 5px;
     margin-bottom: 5px;
+    width: 80%;
+    align: center;
 }
 
 .btn-group .button {
@@ -147,5 +162,90 @@ div.hostname {
     text-align: center;
     color: blue;
     font-size: 2em;
+}
+ 
+*, *: before, *: after {
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box;
+}
+
+.main {
+    margin: 0 auto; 
+    min-width: 320px; 
+    max-width: 100%;
+    text-align: center;
+    background: #fff;
+    border-style: inset;
+}
+
+.content {
+    color: black;
+    width: 100%;
+}
+
+.content > div {
+    display: none; 
+    padding: 20px 25px 5px;
+    border-top: 1px solid #ddd;
+}
+ 
+.main input {
+    display: none;
+}
+
+label {
+    display: inline-block;
+    margin: 0 0 -1px;
+    padding: 15px 25px; 
+    font-weight: 600; 
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+label[for*='1']:before {
+    content:'\f1b':
+}
+
+label[for*='2']:before {
+    content:'\f7d':
+}
+
+label[for*='3']:before {
+    content:'\f6b':
+}
+
+label[for*='4']:before {
+    content:'\fa9':
+}
+
+label[for*='5']:before {
+    content:'\f2b':
+}
+
+label:hover {
+    color: #888; 
+    cursor: pointer;
+}
+
+input:checked + label {
+    color: #555;
+    border: 1px solid #ddd;
+    border-top: 2px solid orange;
+    border-bottom: 1px solid #fff;
+}
+ 
+#tab1:checked ~ .content #content1,
+#tab2:checked ~ .content #content2,
+#tab3:checked ~ .content #content3,
+#tab4:checked ~ .content #content4,
+#tab5:checked ~ .content #content5 {
+    display: block;
+}
+ 
+@media screen and (max-width: 400px) { 
+    label {
+        padding: 15px 10px;
+    } 
 }
 

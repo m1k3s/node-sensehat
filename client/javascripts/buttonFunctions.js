@@ -4,6 +4,12 @@ function doRainbow() {
     });
 }
 
+function doSparkle() {
+    $(document).ready(function() {
+        $.post("/sparkle");
+    });
+}
+
 function notImplemented() {
     $(document).ready(function() {
         alert("This button function is not implemented");
