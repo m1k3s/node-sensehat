@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
 
 html, body {
     height: 100%;
@@ -41,9 +42,10 @@ a {
 }
 
 .title {
-    background: #24C6DC;
-    background: -webkit-linear-gradient(to left, #00bfff, #000080);
-    background: linear-gradient(310deg, #00bfff, #000080);
+    background: #8b0000;
+    background-image: url('../images/rpi3-logo.png'), -webkit-linear-gradient(to left, #ff1493, #8b0000);
+    background-image: url('../images/rpi3-logo.png'), linear-gradient(310deg, #ff1493, #8b0000);
+    background-repeat: no-repeat;
     text-align: center;
     padding-top: 2em;
     padding-bottom: 2em;
@@ -171,6 +173,7 @@ div.hostname {
 }
 
 .main {
+    padding: 5px 0px;
     margin: 0 auto; 
     min-width: 320px; 
     max-width: 100%;

@@ -60,10 +60,14 @@ function getServerInfo() {
         let march = result.serverinfo.node.march;
         let str2 = sys + " " + kernel + " " + march;
         let str3 = "== " + node + " ==";
+
+        let uptime = "Uptime: " + result.serverinfo.uptime.uptime;
+
         document.getElementById("host").innerHTML = str3;
-        document.getElementById("banner").innerHTML = str2;
+        document.getElementById("kernel").innerHTML = str2;
         document.getElementById("orientation").innerHTML = str1;
         document.getElementById("loadavg").innerHTML = str0;
+        document.getElementById("uptime").innerHTML = uptime;
     });
 }
 
