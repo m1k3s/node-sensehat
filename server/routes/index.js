@@ -191,5 +191,55 @@ router.get('/db/netstats/:rows', function(req, res, next) {
     });
 });
 
+router.get('/db/diskstats', function(req, res, next) {
+    const results = [];
+    // Get a Postgres client from the connection pool
+    pg.connect(connectionString, function(err, client, done) {
+        // Handle connection errors
+        if (err) {
+            done();
+            console.log(err);
+            return res.status(500).json({success: false, data: err});
+        }
+        // SQL Query > Select Data
+        const query = client.query('SELECT * FROM diskstats ORDER BY id ASC;');
+        // Stream results back one row at a time
+        query.on('row', function(row) {
+            results.push(row);
+        });
+        // After all data is returned, close connection and return results
+        query.on('end', function() {
+            done();
+            return res.json(results);
+        });
+    });
+});
+
+router.get('/db/diskstats/:rows', function(req, res, next) {
+    const results = [];
+    const rows = req.params.rows;
+    // Get a Postgres client from the connection pool
+    pg.connect(connectionString, function(err, client, done) {
+        // Handle connection errors
+        if (err) {
+            done();
+            console.log(err);
+            return res.status(500).json({success: false, data: err});
+        }
+        // SQL Query > Select last 'rows' number of rows of Data
+        const query = client.query('SELECT * FROM (SELECT * FROM diskstats ORDER BY id DESC LIMIT ($1)) AS temp ORDER BY id ASC', [rows]);
+        // Stream results back one row at a time
+        query.on('row', function(row) {
+            results.push(row);
+        });
+        // After all data is returned, close connection and return results
+        query.on('end', function() {
+            done();
+            return res.json(results);
+        });
+    });
+});
+
+
 module.exports = router;
 

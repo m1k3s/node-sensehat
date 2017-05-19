@@ -31,43 +31,51 @@
                 <label for="tab4">Load Avg</label>
                 <input id="tab5" type="radio" name="tabs" ng-click="getNetStats()">
                 <label for="tab5">Network</label>
+                <input id="tab6" type="radio" name="tabs" ng-click="getDiskStats()">
+                <label for="tab6">Disk</label>
 
                 <div class='content'>
                     <div id='content1'>
-                        <center><h3>Temperature (&#8457;)</h3></center>
+                        <h3>Temperature (&#8457;)</h3>
                         <div class='graph-container'>
                             <linechart data="data0" options="options0"></linechart>
                         </div>
                     </div>
                     <div id='content2'>
-                        <center><h3>Relative Humidity (%)</h3></center>
+                        <h3>Relative Humidity (%)</h3>
                         <div class='graph-container'>
                             <linechart data="data0" options="options1"></linechart>
                         </div> 
                      </div>
                     <div id='content3'>
-                        <center><h3>Barometric Pressure (milliBars)</h3></center>
+                        <h3>Barometric Pressure (milliBars)</h3>
                         <div class='graph-container'>
                             <linechart data="data0" options="options2"></linechart>
                         </div>
                     </div>
                     <div id='content4'>
-                        <center><h3>RPi3 Load Averages</h3></center>
+                        <h3>RPi3 Load Averages</h3>
                         <div class='graph-container'>
                             <linechart data="data1" options="options3"></linechart>
                         </div>
                     </div>
                     <div id='content5'>
-                        <center><h3>Network Statistics - Bytes/15 minute Intervals</h3></center>
+                        <h3>Network Statistics - Bytes/15 minute Intervals</h3>
                         <div class='graph-container' id='netstats'>
                             <linechart data="data2" options="options4"></linechart>
                         </div>
                     </div>
+                    <div id='content6'>
+                        <h3>Disk IO Statistics - Bytes/15 minute Intervals</h3>
+                        <div class='graph-container' id='diskstats'>
+                            <linechart data="data3" options="options5"></linechart>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <br><hr>
+            <br>
 
-            <p class="colorful">Polaroids</p>
+            <p><h1 class="colorful2">Polaroids</h1></p>
             <div class='container'> <!-- picture div -->
                 <div class='polaroid' align: 'center'>
                     <a target="_blank" href="images/rpi3-ports.png">

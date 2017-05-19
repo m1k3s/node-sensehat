@@ -46,8 +46,23 @@ app.service('netstatsService', function ($http) {
     return { getNetStats: getNetStats };
 });
 
+app.service('diskstatsService', function ($http) {
+    var getDiskStats = function(rows) {
+        if (rows > 0) {
+            return $http.get('/db/diskstats/' + rows).then(function(response) {
+                return response;
+            });
+        } else {
+            return $http.get('/db/diskstats').then(function(response) {
+                return response;
+            });
+        }
+    };
+    return { getDiskStats: getDiskStats };
+});
+
 // only retrieve 5 days (480 rows) for display
-app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstatsService) {
+app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstatsService, diskstatsService) {
     $scope.data0 = [];
     $scope.isLoaded0 = false;
     dataService.getData(480).then(function(response) {
@@ -80,12 +95,28 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
             row.timestamp = new Date(row.timestamp);
             // this data plotted on log axis, make sure 
             // there are no zero | negative data points
-            if (row.tx_rate < 1.0) {row.tx_rate = 1.0;}
-            if (row.rx_rate < 1.0) {row.rx_rate = 1.0;}
+            if (row.tx_rate < 0.1) {row.tx_rate = 0.1;}
+            if (row.rx_rate < 0.1) {row.rx_rate = 0.1;}
         });
         $scope.isLoaded2 = true;
     }, function() {
         $scope.error = 'Unable to GET netstats data';
+    });
+
+    $scope.data3 = [];
+    $scope.isLoaded3 = false;
+    diskstatsService.getDiskStats(480).then(function(response) {
+        $scope.data3 = response;
+        $scope.data3.data.forEach(function(row) {
+            row.timestamp = new Date(row.timestamp);
+            // this data plotted on log axis, make sure 
+            // there are no zero | negative data points
+            if (row.rbytes < 0.1) {row.rbytes = 0.1;}
+            if (row.wbytes < 0.1) {row.wbytes = 0.1;}
+        });
+        $scope.isLoaded3 = true;
+    }, function() {
+        $scope.error = 'Unable to GET diskstats data';
     });
 
     $scope.options0 = {
@@ -98,7 +129,7 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 dataset: 'data',
                 key: 'temperature',
                 label: 'Fahrenheit',
-                color: '#ff4500',
+                color: '#ff0000',
                 type: ['line', 'area'],
                 id: 'Series0',
                 interpolation: {mode: 'cardinal', tension: 0.7}
@@ -289,7 +320,8 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
             }
         }
     };
-     $scope.options4 = {
+
+    $scope.options4 = {
         zoom: { x: true, y: false },
         pan: {x: true, y: false, y2: false },
         margin: {top: 20, right: 50, left: 50, bottom: 50},
@@ -299,8 +331,8 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                dataset: 'data',
                key: 'tx_rate',
                label: 'TX Bytes/15 minutes',
-               color: '#ff2222',
-               type: ['line', 'area'],
+               color: '#20b2aa',
+               type: ['line'],
                id: 'Series6',
                interpolation: {mode: 'cardinal', tension: 0.7}
            },
@@ -309,8 +341,8 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                dataset: 'data',
                key: 'rx_rate',
                label: 'RX Bytes/15 minutes',
-               color: '#2255ff',
-               type: ['line', 'area'],
+               color: '#e066ff',
+               type: ['line'],
                id: 'Series7',
                interpolation: {mode: 'cardinal', tension: 0.7}
            }
@@ -328,7 +360,7 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
             },
             y: {
                 type: 'log',
-                min: 100
+                min: 1
             }
         },
         tooltipHook: function(d) {
@@ -350,6 +382,66 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
         }
     };
 
+    $scope.options5 = {
+        zoom: { x: true, y: false },
+        pan: {x: true, y: false, y2: false },
+        margin: {top: 20, right: 50, left: 50, bottom: 50},
+        series: [
+           {
+               axes: 'y',
+               dataset: 'data',
+               key: 'wbytes',
+               label: 'Write Bytes/15 minutes',
+               color: '#7ccd7c',
+               type: ['line', 'area'],
+               id: 'Series8',
+               interpolation: {mode: 'step'}
+           },
+           {
+               axes: 'y',
+               dataset: 'data',
+               key: 'rbytes',
+               label: 'Read Bytes/15 minutes',
+               color: '#ff5400',
+               type: ['line', 'area'],
+               id: 'Series9',
+               interpolation: {mode: 'step'}
+           }
+        ],
+        grid: {
+            x: true,
+            y: true
+        },
+        axes: {
+            x: {
+                key: 'timestamp',
+                type: 'date',
+                ticks: 6,
+                tickFormat: d3.time.format('%x')
+            },
+            y: {
+                type: 'log',
+                min: 100
+            }
+        },
+        tooltipHook: function(d) {
+            if (d) {
+                return {
+                    abscissas: 'sda1 ' + d[0].row.x.toTimeString(),
+                    rows: d.map(function(s) {
+                        let n = parseInt(s.row.y1);
+                        let valueLabel = (n >= 1000000 ? (n / 1048576).toFixed(2) + ' MBytes' : n < 1000 ? n.toFixed(2) + ' Bytes': (n / 1024).toFixed(2) + ' KBytes');
+                        return {
+                            label: s.series.label,
+                            value: valueLabel,
+                            color: s.series.color,
+                            id: s.series.id
+                        }
+                    })
+                }
+            }
+        }
+    };
 });
 
 

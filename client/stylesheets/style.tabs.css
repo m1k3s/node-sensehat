@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
 html, body {
     height: 100%;
@@ -36,6 +37,17 @@ a {
     stroke-width: 1px;
 }
 
+/* line thickness for the network and disk stats chart */
+#netstats
+.line-series path {
+    stroke-width: 2px;
+}
+
+#diskstats
+.line-series path {
+    stroke-width: 2px;
+}
+
 .u-full-width {
     width: 100%;
     box-sizing: border-box;
@@ -55,6 +67,8 @@ a {
     margin: 0;
     padding: 0;
     color: white;
+    font-weight: bold;
+    font-size: 2.5em;
 }
 
 img {
@@ -65,10 +79,12 @@ div.polaroid {
     width: 24.99999%;
     display: inline-block;
     background-color: white;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    -webkit-filter: drop-shadow(8px 8px 10px rgba(0, 0, 0, 0.9));
+    filter: drop-shadow(8px 8px 10px rgba(0, 0, 0, 0.9));
     padding: 5px;
     margin: auto;
-    margin-left: 3%;
+    margin-left: 2%;
+    margin-right: 2%;
     margin-bottom: 25px;
 }
 
@@ -77,11 +93,19 @@ img:hover {
 }
 
 p.colorful {
-    color: #a52a2a;
     text-align: center;
+    margin: 0 auto;
+}
+
+h1.colorful2 {
+    display: table;
+    margin: 0 auto;
     font-size: 2.5em;
     font-weight: bold;
-    margin: 0 auto;
+    background: -webkit-linear-gradient(to left, #ff1493, #8b0000);
+    background: linear-gradient(310deg, #ff1493, #8b0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 p.waiting {
@@ -94,7 +118,7 @@ p.waiting {
 
 div.container {
     text-align: center;
-    padding: 10px 20px;
+    padding: 10px 10px;
     color: #000;
 }
 
@@ -162,8 +186,10 @@ div.information {
 
 div.hostname {
     text-align: center;
-    color: blue;
+    color: #444;
     font-size: 2em;
+    font-weight: bold;
+    padding: 5px 0;
 }
  
 *, *: before, *: after {
@@ -173,7 +199,7 @@ div.hostname {
 }
 
 .main {
-    padding: 5px 0px;
+    padding: 5px 0;
     margin: 0 auto; 
     min-width: 320px; 
     max-width: 100%;
@@ -203,27 +229,19 @@ label {
     padding: 15px 25px; 
     font-weight: 600; 
     text-align: center;
+    color: #bbb;
     border: 1px solid transparent;
 }
 
-label[for*='1']:before {
-    content:'\f1b':
+label:before {
+  font-family: fontawesome;
+  font-weight: normal;
+  margin-right: 10px;
 }
 
-label[for*='2']:before {
-    content:'\f7d':
-}
-
-label[for*='3']:before {
-    content:'\f6b':
-}
-
-label[for*='4']:before {
-    content:'\fa9':
-}
-
-label[for*='5']:before {
-    content:'\f2b':
+/* fa-line-graph */
+label[for*='tab']:before {
+    content:'\f201';
 }
 
 label:hover {
@@ -234,18 +252,19 @@ label:hover {
 input:checked + label {
     color: #555;
     border: 1px solid #ddd;
-    border-top: 2px solid orange;
+    border-top: 2px solid #ff1493;
     border-bottom: 1px solid #fff;
 }
- 
+
 #tab1:checked ~ .content #content1,
 #tab2:checked ~ .content #content2,
 #tab3:checked ~ .content #content3,
 #tab4:checked ~ .content #content4,
-#tab5:checked ~ .content #content5 {
+#tab5:checked ~ .content #content5,
+#tab6:checked ~ .content #content6 {
     display: block;
 }
- 
+
 @media screen and (max-width: 400px) { 
     label {
         padding: 15px 10px;
