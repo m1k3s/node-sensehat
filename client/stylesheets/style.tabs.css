@@ -125,9 +125,9 @@ div.container {
 div.serverinfo {
     text-align: center;
     padding: 10px 20px;
-    color: #000;
+    color: #1e90ff;
     border-style: inset;
-    background: #ddd;
+    background: #191970;
 }
 
 .clearfix:after {
@@ -175,7 +175,7 @@ div.explanation {
 
 div.information {
     text-align: center;
-    color: black;
+    color: #1e90ff;
     font-family: Monospace;
     font-size: 1.5em;
     margin-left: 35px;
@@ -186,8 +186,17 @@ div.information {
 
 div.hostname {
     text-align: center;
-    color: #444;
+    color: #ffd700;
     font-size: 2em;
+    font-weight: bold;
+    padding: 5px 0;
+}
+
+div.author {
+    text-align: center;
+    color: #000;
+    font-family: Monospace;
+    font-size: 1em;
     font-weight: bold;
     padding: 5px 0;
 }
@@ -239,11 +248,28 @@ label:before {
   margin-right: 10px;
 }
 
-/* fa-line-graph */
+/* same icon for all chart tabs */
+/* fa-area-chart */
 label[for*='tab']:before {
-    content:'\f201';
+    content:'\f1fe';
 }
 
+/* different icon per chart tab */
+/* fa-bar-chart */
+/*label[for*='1']:before {
+    content: '\f080';
+}*/
+
+/* fa-tachometer */
+/*label[for*='2']:before {
+    content: '\f0e4';
+}*/
+
+/* fa-line-chart */
+/*label[for*='3']:before {
+    content: '\f201';
+}
+*/
 label:hover {
     color: #888; 
     cursor: pointer;

@@ -142,6 +142,21 @@ router.get('/serverinfo', function (req, res, next) {
     });
 });
 
+router.get('/sysinfo', function (req, res, next) {
+    let results = '';
+    pyshell = new PythonShell('getsysteminfo.py', {mode: 'json'});
+
+    pyshell.on('message', function (message) {
+        results = message;
+    });
+
+    pyshell.end(function(err) {
+        if (err) throw err;
+        //console.log('finished getting server info');
+        return res.json(results);
+    });
+});
+
 router.get('/db/netstats', function(req, res, next) {
     const results = [];
     // Get a Postgres client from the connection pool

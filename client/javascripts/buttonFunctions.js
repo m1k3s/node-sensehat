@@ -12,7 +12,7 @@ function doSparkle() {
 
 function notImplemented() {
     $(document).ready(function() {
-        alert("This button function is not implemented");
+        alert("This function is not implemented");
     });
 }
 
@@ -68,6 +68,26 @@ function getServerInfo() {
         document.getElementById("orientation").innerHTML = str1;
         document.getElementById("loadavg").innerHTML = str0;
         document.getElementById("uptime").innerHTML = uptime;
+    });
+}
+
+function getSystemInfo() {
+    $.getJSON("/sysinfo", function(result) {
+        gigs = Math.pow(10.0, -9.0);
+        console.log("gigs = " + gigs);
+        let diskFree = Math.round(result.sysinfo.disk.free * gigs);
+        let diskTotal = Math.round(result.sysinfo.disk.total * gigs);
+        let diskPercent = result.sysinfo.disk.percent;
+        let diskStr = "Disk: " + diskFree + " GB free / " + diskTotal + "GB total ( " + diskPercent + "&#37; )";
+
+        megs = Math.pow(10.0, -6.0);
+        let memFree = Math.round(result.sysinfo.memory.free * megs);
+        let memTotal = Math.round(result.sysinfo.memory.total * megs);
+        let memPercent = result.sysinfo.memory.percent;
+        let memStr = "RAM: " + memFree + " MB free / " + memTotal + "MB total ( " + memPercent + "&#37; )";
+
+        document.getElementById("diskspace").innerHTML = diskStr;
+        document.getElementById("memory").innerHTML = memStr;
     });
 }
 

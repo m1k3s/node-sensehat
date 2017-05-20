@@ -13,10 +13,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </head>
     <body ng-app="rpi3" ng-controller='rpi3Ctrl'>
-        <div ng-if='!isLoaded0 || !isLoaded1 || !isLoaded2'>
+        <div ng-if='!isLoaded0 || !isLoaded1 || !isLoaded2 || !isLoaded3'>
             <p class="waiting">Hold please.....</p>
         </div>
-        <div ng-if='isLoaded0 && isLoaded1 && isLoaded2'> <!-- conditional load -->
+        <div ng-if='isLoaded0 && isLoaded1 && isLoaded2 && isLoaded3'> <!-- conditional load -->
             <div class="u-full-width"> <!-- title bar -->
                 <div class="title"><h1>RPi3 - Raspberry Pi Server</h1></div>
             </div><br>
@@ -119,7 +119,10 @@
                 <div class='information' id='kernel'>Waiting...</div>
                 <div class='information' id='orientation'>Current Orientation: Waiting...</div>
                 <div class='information' id='loadavg'>Server Load: Waiting...</div>
-                <div class='information' id='uptime'>Uptime: waiting...</div>
+                <div class='information' id='uptime' style='color: #ff4500;'>Uptime: waiting...</div>
+                <br>
+                <div class='information' id='diskspace' style='color: #228b22;'>Waiting...</div>
+                <div class='information' id='memory' style='color: #228b22;'>Waiting...</div>
                 <!-- p>Execute functions on the server</p>
                 <div class='btn-group'>
                     <button class="button button-shadow" onclick="doRainbow()">Rainbow</button>
@@ -128,13 +131,16 @@
                     <button class="button button-shadow" onclick="notImplemented()">Nope</button>
                 </div -->
             </div><br>
+            <div class='author'>Michael Sheppard, May 2017</div><br>
         </div>
         <script>
         // refresh the server info every 10 seconds
         $(document).ready( function () {
             getServerInfo();
+            getSystemInfo();
         });
         setInterval(getServerInfo, 10000);
+        //setInterval(getSystemInfo, 10000);
         </script>
     </body>
 </html>
