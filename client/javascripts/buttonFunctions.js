@@ -74,7 +74,7 @@ function getServerInfo() {
 function getSystemInfo() {
     $.getJSON("/sysinfo", function(result) {
         gigs = Math.pow(10.0, -9.0);
-        console.log("gigs = " + gigs);
+        //console.log("gigs = " + gigs);
         let diskFree = Math.round(result.sysinfo.disk.free * gigs);
         let diskTotal = Math.round(result.sysinfo.disk.total * gigs);
         let diskPercent = result.sysinfo.disk.percent;

@@ -1,0 +1,21 @@
+[Unit]
+Description=Node.js service
+# Documentation=
+After=network.target
+
+[Service]
+Type=simple
+User=mike
+Environment=SQLDBPWD=b8zslct!
+Environment=SQLDBNAME=serverstats
+Environment=SQLDBUSER=mike
+WorkingDirectory=/home/mike/node-sensehat
+ExecStart=/usr/bin/node /home/mike/node-sensehat/bin/www
+Restart=always
+RestartSec=5
+StandardOutput=syslog
+SyslogIdentifier=node_server
+
+
+[Install]
+WantedBy=multi-user.target

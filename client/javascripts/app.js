@@ -69,6 +69,13 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
         $scope.data0 = response;
         $scope.data0.data.forEach(function(row) {
             row.timestamp = new Date(row.timestamp);
+            // temp is now celsius in the db, convert the old fahrenheit to celsius for now
+            if (row.calibrated_temp > 60.0) {
+                row.calibrated_temp = ((row.calibrated_temp - 32.0) * 0.55556).toFixed(1);
+            }
+            if (row.cpu_temp > 60.0) {
+                row.cpu_temp = ((row.cpu_temp - 32.0) * 0.55556).toFixed(1);
+            }
         });
         $scope.isLoaded0 = true;
     }, function() {
@@ -127,11 +134,40 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
             {
                 axes: 'y',
                 dataset: 'data',
-                key: 'temperature',
-                label: 'Fahrenheit',
+                key: 'calibrated_temp',
+                defined: function(value) {
+                    return value.y1 != undefined;
+                },
+                label: 'Calibrated',
                 color: '#ff0000',
                 type: ['line', 'area'],
                 id: 'Series0',
+                interpolation: {mode: 'cardinal', tension: 0.7}
+            },
+            {
+                axes: 'y',
+                dataset: 'data',
+                key: 'cpu_temp',
+                defined: function(value) {
+                    return value.y1 != undefined;
+                },
+                label: 'CPU',
+                color: '#00ff00',
+                type: ['line', 'area'],
+                id: 'Series0a',
+                interpolation: {mode: 'cardinal', tension: 0.7}
+            },
+            {
+                axes: 'y',
+                dataset: 'data',
+                key: 'raw_temp',
+                defined: function(value) {
+                    return value.y1 != undefined;
+                },
+                label: 'Raw',
+                color: '#0000ff',
+                type: ['line', 'area'],
+                id: 'Series0b',
                 interpolation: {mode: 'cardinal', tension: 0.7}
             }
         ],
@@ -152,9 +188,11 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 return {
                     abscissas: d[0].row.x.toTimeString(),
                     rows: d.map(function(s) {
+                        let n = parseFloat(s.row.y1);
+                        let valueLabel = (n.toFixed(1) + 'C (' + (n * 1.8 + 32).toFixed(1) + 'F)');
                         return {
                             label: s.series.label,
-                            value: s.row.y1,
+                            value: valueLabel,
                             color: s.series.color,
                             id: s.series.id
                         }
@@ -174,6 +212,9 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 axes: 'y',
                 dataset: 'data',
                 key: 'humidity',
+                defined: function(value) {
+                    return value.y1 != undefined;
+                },
                 label: 'Percent',
                 color: '#00cd00',
                 type: ['line', 'area'],
@@ -199,7 +240,7 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 rows: d.map(function(s) {
                     return {
                         label: s.series.label,
-                        value: s.row.y1,
+                        value: s.row.y1 + '%',
                         color: s.series.color,
                         id: s.series.id
                     }
@@ -214,12 +255,15 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
         pan: {x: true, y: false, y2: false },
         margin: {top: 20, right: 50, left: 50, bottom: 50},
         series: [
-            {
+            {   
                 axes: 'y',
                 dataset: 'data',
                 key: 'pressure',
+                defined: function(value) {
+                    return value.y1 != undefined;
+                },
                 label: 'milliBars',
-                color: '#0000cd',
+                color: '#1e90ff',
                 type: ['line', 'area'],
                 id: 'Series2',
                 interpolation: {mode: 'cardinal', tension: 0.7}
@@ -244,7 +288,7 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                     rows: d.map(function(s) {
                         return {
                             label: s.series.label,
-                            value: s.row.y1,
+                            value: s.row.y1 + ' milliBars',
                             color: s.series.color,
                             id: s.series.id
                         }
@@ -260,36 +304,45 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
         pan: {x: true, y: false, y2: false },
         margin: {top: 20, right: 50, left: 50, bottom: 50},
         series: [
-           {
-               axes: 'y',
-               dataset: 'data',
-               key: 'la1',
-               label: '1 minute',
-               color: '#ff2222',
-               type: ['line', 'area'],
-               id: 'Series3',
-               interpolation: {mode: 'cardinal', tension: 0.7}
-           },
-           {
-               axes: 'y',
-               dataset: 'data',
-               key: 'la5',
-               label: '5 minute',
-               color: '#22ff22',
-               type: ['line', 'area'],
-               id: 'Series4',
-               interpolation: {mode: 'cardinal', tension: 0.7}
-           },
-           {
-               axes: 'y',
-               dataset: 'data',
-               key: 'la15',
-               label: '15 minute',
-               color: '#2222ff',
-               type: ['line', 'area'],
-               id: 'Series5',
-               interpolation: {mode: 'cardinal', tension: 0.7}
-           }
+            {
+                axes: 'y',
+                dataset: 'data',
+                key: 'la1',
+                defined: function(value) {
+                     return value.y1 != undefined;
+                },
+                label: '1 minute',
+                color: '#ff2222',
+                type: ['line', 'area'],
+                id: 'Series3',
+                interpolation: {mode: 'cardinal', tension: 0.7}
+            },
+            {
+                axes: 'y',
+                dataset: 'data',
+                key: 'la5',
+                defined: function(value) {
+                     return value.y1 != undefined;
+                },
+                label: '5 minute',
+                color: '#22ff22',
+                type: ['line', 'area'],
+                id: 'Series4',
+                interpolation: {mode: 'cardinal', tension: 0.7}
+            },
+            {
+                axes: 'y',
+                dataset: 'data',
+                key: 'la15',
+                defined: function(value) {
+                     return value.y1 != undefined;
+                },
+                label: '15 minute',
+                color: '#4876ff',
+                type: ['line', 'area'],
+                id: 'Series5',
+                interpolation: {mode: 'cardinal', tension: 0.7}
+            }
 
         ],
         grid: {
@@ -330,21 +383,27 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                axes: 'y',
                dataset: 'data',
                key: 'tx_rate',
+               defined: function(value) {
+                    return value.y1 != undefined;
+               },
                label: 'TX Bytes/15 minutes',
                color: '#20b2aa',
-               type: ['line'],
+               type: ['line', 'area'],
                id: 'Series6',
-               interpolation: {mode: 'cardinal', tension: 0.7}
+               interpolation: {mode: 'step'}
            },
            {
                axes: 'y',
                dataset: 'data',
                key: 'rx_rate',
+               defined: function(value) {
+                    return value.y1 != undefined;
+               },
                label: 'RX Bytes/15 minutes',
                color: '#e066ff',
-               type: ['line'],
+               type: ['line', 'area'],
                id: 'Series7',
-               interpolation: {mode: 'cardinal', tension: 0.7}
+               interpolation: {mode: 'step'}
            }
         ],
         grid: {
@@ -391,6 +450,9 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                axes: 'y',
                dataset: 'data',
                key: 'wbytes',
+               defined: function(value) {
+                    return value.y1 != undefined;
+               },
                label: 'Write Bytes/15 minutes',
                color: '#7ccd7c',
                type: ['line', 'area'],
@@ -401,6 +463,9 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                axes: 'y',
                dataset: 'data',
                key: 'rbytes',
+               defined: function(value) {
+                    return value.y1 != undefined;
+               },
                label: 'Read Bytes/15 minutes',
                color: '#ff5400',
                type: ['line', 'area'],

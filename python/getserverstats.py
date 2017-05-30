@@ -3,9 +3,12 @@
 from sense_hat import SenseHat
 import psycopg2
 import os
+import subprocess
 import psutil
 from time import sleep
 import time
+#import logging
+#from systemd.journal import JournalHandler
 
 # fun with the LED matrix
 def lights(s) :
@@ -36,9 +39,9 @@ def lights(s) :
     s.clear()
 
 # insert sensehat data into the database
-def post_env(cur, t, h, p) :
+def post_env(cur, cal_t, h, p, cpu_t, raw_t) :
     try :
-        cur.execute('INSERT INTO environmental (temperature, humidity, pressure) VALUES (%s, %s, %s)', (t, h, p))
+        cur.execute('INSERT INTO environmental (calibrated_temp, humidity, pressure, cpu_temp, raw_temp) VALUES (%s, %s, %s, %s, %s)', (cal_t, h, p, cpu_t, raw_t))
     except :
         print('Cannot INSERT into TABLE environmental')
 
@@ -115,21 +118,28 @@ def networkStats() :
     return (txbytes, rxbytes, txpackets, rxpackets)
 
 def sensehatData(s) :
-    t = s.get_temperature()
+    tc = s.get_temperature()
     h = s.get_humidity()
     p = s.get_pressure()
 
-    # return temperature as Fahrenheit
-    return (t * 1.8 + 32, h, p)
+    # calibrate temperature
+    cpu_temp = subprocess.check_output("/opt/vc/bin/vcgencmd measure_temp", shell=True)
+    cpu_tempc = float(cpu_temp.decode("utf-8").replace("temp=","").replace("'C\n",""))
+    # calibrate the temperature reading
+    # temp_calibrated = (tempC - (cpu_tempC - tempC) / FACTOR) where FACTOR has to be arrived at
+    # trial and error. Or by using another temperature sensor not affected by the cpu heat.
+    t_cal = (tc - (cpu_tempc - tc)/1.1)
+
+    return (round(t_cal, 1), round(h, 1), round(p, 1), round(cpu_tempc, 1), round(tc, 1))
 
 def loadAvgs() :
     return os.getloadavg()
-    
+
 # database access vars
 hostname = 'localhost'
 username = 'mike' # os.environ.get('SQLDBUSER', '') 
 password = 'b8zslct!' # os.environ.get('SQLDBPWD', '')
-database = 'sensehat' # os.environ.get('SQLDBNAME', '')
+database = 'serverstats' # os.environ.get('SQLDBNAME', '')
 
 sense = SenseHat()
 
@@ -138,15 +148,23 @@ env = sensehatData(sense)
 loadavg = loadAvgs()
 disk = diskIOStats()
 
+#log = logging.getLogger('serverstats')
+#log.addHandler(JournalHandler())
+#log.setLevel(logging.INFO)
+## debug environment variables
+#log.info("SQLDBUSER: {0}".format(os.environ.get('SQLDBUSER', 'not found')))
+#log.info("SQLDBPWD: {0}".format(os.environ.get('SQLDBPWD', 'not found')))
+#log.info("SQLDBNAME: {0}".format(os.environ.get('SQLDBNAME', 'not found')))
+
 # try to get a db connection and post the data
 try:
     conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database)
     conn.autocommit = True
     cur = conn.cursor()
 except:
-    print("cannot connect to database")
+    print("cannot connect to the {0} database".format(database))
  
-post_env(cur, env[0], env[1], env[2])
+post_env(cur, env[0], env[1], env[2], env[3], env[4])
 post_loadavg(cur, loadavg[0], loadavg[1], loadavg[2])
 # long way around getting the flow rate
 # post the current readings returning the id

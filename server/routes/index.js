@@ -3,7 +3,7 @@ var router = express.Router();
 var PythonShell = require('python-shell');
 const pg = require('pg');
 const path = require('path');
-const connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/sensehat';
+const connectionString = 'postgres://localhost:5432/serverstats';
 PythonShell.defaultOptions = { scriptPath: 'server/python/' };
 
 // GET home page
