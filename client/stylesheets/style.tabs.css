@@ -101,6 +101,7 @@ div.loader {
     background-image: url('../images/rpi3-logo.png'), -webkit-linear-gradient(to left, #ff1493, #8b0000);
     background-image: url('../images/rpi3-logo.png'), linear-gradient(310deg, #ff1493, #8b0000);
     background-repeat: no-repeat;
+    background-position: left; /* vertically centers the image on the left */
     text-align: center;
     padding-top: 2em;
     padding-bottom: 2em;

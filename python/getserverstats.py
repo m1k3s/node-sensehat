@@ -7,8 +7,6 @@ import subprocess
 import psutil
 from time import sleep
 import time
-#import logging
-#from systemd.journal import JournalHandler
 
 # fun with the LED matrix
 def lights(s) :
@@ -135,11 +133,15 @@ def sensehatData(s) :
 def loadAvgs() :
     return os.getloadavg()
 
+#print(os.environ.get('SQLDBUSER', 'user not found'))
+#print(os.environ.get('SQLDBPWD', 'pwd not found'))
+#print(os.environ.get('SQLDBNAME', 'name not found'))
+
 # database access vars
 hostname = 'localhost'
-username = 'mike' # os.environ.get('SQLDBUSER', '') 
-password = 'b8zslct!' # os.environ.get('SQLDBPWD', '')
-database = 'serverstats' # os.environ.get('SQLDBNAME', '')
+username = os.environ.get('SQLDBUSER', '') 
+password = os.environ.get('SQLDBPWD', '')
+database = os.environ.get('SQLDBNAME', '')
 
 sense = SenseHat()
 
@@ -147,14 +149,6 @@ traffic = networkStats()
 env = sensehatData(sense)
 loadavg = loadAvgs()
 disk = diskIOStats()
-
-#log = logging.getLogger('serverstats')
-#log.addHandler(JournalHandler())
-#log.setLevel(logging.INFO)
-## debug environment variables
-#log.info("SQLDBUSER: {0}".format(os.environ.get('SQLDBUSER', 'not found')))
-#log.info("SQLDBPWD: {0}".format(os.environ.get('SQLDBPWD', 'not found')))
-#log.info("SQLDBNAME: {0}".format(os.environ.get('SQLDBNAME', 'not found')))
 
 # try to get a db connection and post the data
 try:

@@ -1,5 +1,25 @@
 var app = angular.module('rpi3', ['n3-line-chart']);
 
+let logMap = new Map();
+logMap.set('1e-1', '0');
+logMap.set('1e+0', '1');
+logMap.set('1e+1', '10');
+logMap.set('1e+2', '100');
+logMap.set('1e+3', '1K');
+logMap.set('1e+4', '10K');
+logMap.set('1e+5', '100K');
+logMap.set('1e+6', '1M');
+logMap.set('1e+7', '10M');
+logMap.set('1e+8', '100M');
+logMap.set('1e+9', '1G');
+
+function getFormat(n) {
+    let result = (n >= 1000000 ? (n / 1048576).toFixed(2) + ' MBytes' :
+    n < 1000 ? n.toFixed(2) + ' Bytes':
+    (n / 1024).toFixed(2) + ' KBytes');
+    return result;
+}
+
 app.service('dataService', function($http) {
     var getData = function(rows) {
         if (rows > 0) {
@@ -69,7 +89,9 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
         $scope.data0 = response;
         $scope.data0.data.forEach(function(row) {
             row.timestamp = new Date(row.timestamp);
-            // temp is now celsius in the db, convert the old fahrenheit to celsius for now
+            // temperature is now celsius in the db, convert the old fahrenheit to celsius for now
+            // this can probably be removed once we move beyond the 5 day point
+            // HACK ALERT: making some serious assumptions here...
             if (row.calibrated_temp > 60.0) {
                 row.calibrated_temp = ((row.calibrated_temp - 32.0) * 0.55556).toFixed(1);
             }
@@ -126,24 +148,12 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
         $scope.error = 'Unable to GET diskstats data';
     });
 
+
     $scope.options0 = {
         zoom: { x: true, y: false },
         pan: {x: true, y: false, y2: false },
         margin: {top: 20, right: 50, left: 50, bottom: 50},
         series: [
-            {
-                axes: 'y',
-                dataset: 'data',
-                key: 'calibrated_temp',
-                defined: function(value) {
-                    return value.y1 != undefined;
-                },
-                label: 'Calibrated',
-                color: '#ff0000',
-                type: ['line', 'area'],
-                id: 'Series0',
-                interpolation: {mode: 'cardinal', tension: 0.7}
-            },
             {
                 axes: 'y',
                 dataset: 'data',
@@ -169,6 +179,19 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 type: ['line', 'area'],
                 id: 'Series0b',
                 interpolation: {mode: 'cardinal', tension: 0.7}
+            },
+            {
+                axes: 'y',
+                dataset: 'data',
+                key: 'calibrated_temp',
+                defined: function(value) {
+                    return value.y1 != undefined;
+                },
+                label: 'Calibrated',
+                color: '#ff0000',
+                type: ['line', 'area'],
+                id: 'Series0',
+                interpolation: {mode: 'cardinal', tension: 0.7}
             }
         ],
         grid: { 
@@ -181,6 +204,18 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 type: 'date',
                 ticks: 6,
                 tickFormat: d3.time.format('%x')
+            },
+            y: {
+                key: 'calibrated_temp',
+                tickFormat: function(value, index) {
+                    return (parseFloat(value)).toFixed(0) + 'C';
+                }
+            },
+            y2: {
+                key: 'raw_temp',
+                tickFormat: function(value, index) {
+                    return (parseFloat(value) * 1.8 + 32.0).toFixed(0) + 'F';
+                }
             }
         },
         tooltipHook: function(d) {
@@ -215,7 +250,7 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 defined: function(value) {
                     return value.y1 != undefined;
                 },
-                label: 'Percent',
+                label: 'Humidity',
                 color: '#00cd00',
                 type: ['line', 'area'],
                 id: 'Series1',
@@ -232,15 +267,28 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 type: 'date',
                 ticks: 6,
                 tickFormat: d3.time.format('%x')
+            },
+            y: {
+                key: 'humidity',
+                tickFormat: function(value, index) {
+                    return (parseFloat(value)).toFixed(0) + '%RH';
+                }
+            },
+            y2: {
+                key: 'humidity',
+                tickFormat: function(value, index) {
+                    return (parseFloat(value)).toFixed(0) + '%RH';
+                }
             }
+
         },
         tooltipHook: function(d) {
             return {
                 abscissas: d[0].row.x.toTimeString(),
                 rows: d.map(function(s) {
                     return {
-                        label: s.series.label,
-                        value: s.row.y1 + '%',
+                        label: '',
+                        value: s.row.y1 + '%RH',
                         color: s.series.color,
                         id: s.series.id
                     }
@@ -253,7 +301,7 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
     $scope.options2 = {
         zoom: { x: true, y: false },
         pan: {x: true, y: false, y2: false },
-        margin: {top: 20, right: 50, left: 50, bottom: 50},
+        margin: {top: 20, right: 50, left: 60, bottom: 50},
         series: [
             {   
                 axes: 'y',
@@ -262,7 +310,7 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 defined: function(value) {
                     return value.y1 != undefined;
                 },
-                label: 'milliBars',
+                label: 'Pressure',
                 color: '#1e90ff',
                 type: ['line', 'area'],
                 id: 'Series2',
@@ -279,6 +327,18 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 type: 'date',
                 ticks: 6,
                 tickFormat: d3.time.format('%x')
+            },
+            y: {
+                key: 'pressure',
+                tickFormat: function(value, index) {
+                    return (parseFloat(value)).toFixed(1) + ' hPa';
+                }
+            },
+            y2: {
+                key: 'pressure',
+                tickFormat: function(value, index) {
+                    return (parseFloat(value) * 0.0295301).toFixed(2) + ' Hg';
+                }
             }
         },
         tooltipHook: function(d) {
@@ -286,9 +346,10 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 return {
                     abscissas: d[0].row.x.toTimeString(),
                     rows: d.map(function(s) {
+                        let n = parseFloat(s.row.y1);
                         return {
-                            label: s.series.label,
-                            value: s.row.y1 + ' milliBars',
+                            label: '',
+                            value: n.toFixed(1) + ' hPa (' + (n * 0.0295301).toFixed(2) + ' Hg)',
                             color: s.series.color,
                             id: s.series.id
                         }
@@ -419,7 +480,17 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
             },
             y: {
                 type: 'log',
-                min: 1
+                min: 1,
+                tickFormat: function(n, idx) {
+                    return logMap.get(n.toExponential());
+                }
+            },
+            y2: {
+                type: 'log',
+                min: 1,
+                tickFormat: function(n, idx) {
+                    return logMap.get(n.toExponential());
+                }
             }
         },
         tooltipHook: function(d) {
@@ -427,11 +498,9 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 return {
                     abscissas: 'eth0 ' + d[0].row.x.toTimeString(),
                     rows: d.map(function(s) {
-                        let n = parseInt(s.row.y1);
-                        let valueLabel = (n >= 1000000 ? (n / 1048576).toFixed(2) + ' MBytes' : n < 1000 ? n.toFixed(2) + ' Bytes': (n / 1024).toFixed(2) + ' KBytes');
                         return {
                             label: s.series.label,
-                            value: valueLabel,
+                            value: getFormat(parseInt(s.row.y1)),
                             color: s.series.color,
                             id: s.series.id
                         }
@@ -486,7 +555,17 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
             },
             y: {
                 type: 'log',
-                min: 100
+                min: 1,
+                tickFormat: function(n, idx) {
+                    return logMap.get(n.toExponential());
+                }
+            },
+            y2: {
+                type: 'log',
+                min: 1,
+                tickFormat: function(n, idx) {
+                    return logMap.get(n.toExponential());
+                }
             }
         },
         tooltipHook: function(d) {
@@ -494,11 +573,9 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
                 return {
                     abscissas: 'sda1 ' + d[0].row.x.toTimeString(),
                     rows: d.map(function(s) {
-                        let n = parseInt(s.row.y1);
-                        let valueLabel = (n >= 1000000 ? (n / 1048576).toFixed(2) + ' MBytes' : n < 1000 ? n.toFixed(2) + ' Bytes': (n / 1024).toFixed(2) + ' KBytes');
                         return {
                             label: s.series.label,
-                            value: valueLabel,
+                            value: getFormat(parseInt(s.row.y1)),
                             color: s.series.color,
                             id: s.series.id
                         }
