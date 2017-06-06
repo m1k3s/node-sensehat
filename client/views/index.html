@@ -4,7 +4,7 @@
         <title>RPi3 - Raspberry Pi Server</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type: "text/css" href="scripts/n3-charts/build/LineChart.css">
-        <link rel="stylesheet" type: "text/css" href="stylesheets/style.tabs.css">
+        <link rel="stylesheet" type: "text/css" href="stylesheets/style.css">
         <script src="scripts/angular/angular.min.js"></script>
         <script type="text/javascript" src="javascripts/app.js"> </script>
         <script type="text/javascript" src="javascripts/buttonFunctions.js"></script>
@@ -14,7 +14,7 @@
     </head>
     <body ng-app="rpi3" ng-controller='rpi3Ctrl'>
         <div ng-if='!isLoaded0 || !isLoaded1 || !isLoaded2 || !isLoaded3'>
-            <center><div class='loader'></div></center>
+        <center><div class='loading'><div class='inner'></div></div></center>
         </div>
         <div ng-if='isLoaded0 && isLoaded1 && isLoaded2 && isLoaded3'> <!-- conditional load -->
             <div class="u-full-width"> <!-- title bar -->
