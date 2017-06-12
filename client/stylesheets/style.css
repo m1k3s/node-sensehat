@@ -265,27 +265,35 @@ label:before {
 }
 
 /* same icon for all chart tabs */
-/* fa-area-chart */
-label[for*='tab']:before {
+/*label[for*='tab']:before {
     content:'\f1fe';
-}
+}*/
 
 /* different icon per chart tab */
-/* fa-bar-chart */
-/*label[for*='1']:before {
-    content: '\f080';
-}*/
+label[for*='1']:before {
+    content: '\f06d';
+}
 
-/* fa-tachometer */
-/*label[for*='2']:before {
-    content: '\f0e4';
-}*/
+label[for*='2']:before {
+    content: '\f0e9';
+}
 
-/* fa-line-chart */
-/*label[for*='3']:before {
+label[for*='3']:before {
     content: '\f201';
 }
-*/
+
+label[for*='4']:before {
+    content: '\f1fe';
+}
+
+label[for*='5']:before {
+    content: '\f012';
+}
+
+label[for*='6']:before {
+    content: '\f1c0';
+}
+
 label:hover {
     color: #888; 
     cursor: pointer;
