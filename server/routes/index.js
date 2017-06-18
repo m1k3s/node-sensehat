@@ -6,14 +6,12 @@ const path = require('path');
 const connectionString = 'postgres://localhost:5432/serverstats';
 PythonShell.defaultOptions = { scriptPath: 'server/python/' };
 
-var db = require('queries');
-
 // GET home page
 router.get('/', function(req, res, next) {
     res.sendFile(path.join(__dirname, '..', '..', 'client', 'views', 'index.html'));
 });
 
-router.get('/db/env_sensors', /function(req, res, next) {
+router.get('/db/env_sensors', function(req, res, next) {
     const results = [];
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
