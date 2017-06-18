@@ -6,7 +6,7 @@ const path = require('path');
 const connectionString = 'postgres://localhost:5432/serverstats';
 PythonShell.defaultOptions = { scriptPath: 'server/python/' };
 
-var db = require('queries');
+var db = require('./queries.js');
 
 // GET home page
 router.get('/', function(req, res, next) {
