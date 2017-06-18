@@ -21,79 +21,44 @@ function getFormat(n) {
     return result;
 }
 
-app.service('dataService', function($http) {
-    var getData = function(rows) {
-        if (rows > 0) {
-            return $http.get('/db/env_sensors/' + rows).then(function(response) {
+app.service('sensorDataService', function($http) {
+    var getSensorData = function(range) {
+            return $http.get('/db/env_sensors/' + range).then(function(response) {
                 return response;
-            });
-        } else {
-            return $http.get('/db/env_sensors').then(function(response) {
-                return response;
-            });
-        }
+        });
     };
-
-    return { getData: getData };
+    return { getSensorData: getSensorData };
 });
 
-//app.service('dataService', function($http) {
-//    var getData = function(start, end) {
-//        return $http.get('/db/env_sensors/' + start + ',' + end).then(function(response) {
-//            return response;
-//        });
-//    }
-//
-//    return { getData: getData };
-//});
-
 app.service('loadAvgService', function ($http) {
-    var getLoadAvg = function(rows) {
-        if (rows > 0) { 
-            return $http.get('/db/loadavg/' + rows).then(function(response) {
-                return response;
-            });
-        } else {
-            return $http.get('/db/loadavg').then(function(response) {
-                return response;
-            });
-        }
+    var getLoadAvg = function(range) {
+	    return $http.get('/db/loadavg/' + range).then(function(response) {
+		return response;
+	});
     };
     return { getLoadAvg: getLoadAvg };
 });
 
 app.service('netstatsService', function ($http) {
-    var getNetStats = function(rows) {
-        if (rows > 0) {
-            return $http.get('/db/netstats/' + rows).then(function(response) {
-                return response;
-            });
-        } else {
-            return $http.get('/db/netstats').then(function(response) {
-                return response;
-            });
-        }
+    var getNetStats = function(range) {
+	return $http.get('/db/netstats/' + range).then(function(response) {
+	    return response;
+	});
     };
     return { getNetStats: getNetStats };
 });
 
 app.service('diskstatsService', function ($http) {
-    var getDiskStats = function(rows) {
-        if (rows > 0) {
-            return $http.get('/db/diskstats/' + rows).then(function(response) {
-                return response;
-            });
-        } else {
-            return $http.get('/db/diskstats').then(function(response) {
-                return response;
-            });
-        }
+    var getDiskStats = function(range) {
+	return $http.get('/db/diskstats/' + range).then(function(response) {
+	    return response;
+	});
     };
     return { getDiskStats: getDiskStats };
 });
 
 // retrieve 5 days (480 rows) of data for default view
-app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstatsService, diskstatsService) {
+app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, netstatsService, diskstatsService) {
     $scope.data0 = [];
     $scope.isLoaded0 = false;
     $scope.data1 = [];
@@ -103,20 +68,18 @@ app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstat
     $scope.data3 = [];
     $scope.isLoaded3 = false;
     $scope.items = [
-        {name: '1 Day',   value: 96},
-        {name: '2 Days',  value: 192},
-        {name: '3 Days',  value: 288},
-        {name: '4 Days',  value: 384},
-        {name: '5 Days',  value: 480},
-        {name: '10 Days', value: 960},
-        {name: '25 Days', value: 1920},
-        {name: '50 Days', value: 2880},
-        {name: 'All', value: 0}
+        {name: 'Today',         value: 'today'},
+        {name: 'Yesterday',     value: 'yesterday'},
+        {name: 'Last 7 Days',   value: '7days'},
+        {name: 'Last 30 Days',  value: '30days'},
+        {name: 'This Month',    value: 'curmonth'},
+        {name: 'Last Month',    value: 'lastmonth'},
+        {name: 'Custom Range',  value: 'custom'}
     ];
     $scope.objSelectedRow = {selectedRow: $scope.items[0]}; // default to 5 days
 
     $scope.updateData = function() {
-        dataService.getData($scope.objSelectedRow.selectedRow.value).then(function(response) {
+        sensorDataService.getSensorData($scope.objSelectedRow.selectedRow.value).then(function(response) {
             $scope.data0 = response;
             $scope.data0.data.forEach(function(row) {
                 row.timestamp = new Date(row.timestamp);

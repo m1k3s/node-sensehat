@@ -1,27 +1,3 @@
-function getSensorData(req, res, next) {
-    const results = [];
-    // Get a Postgres client from the connection pool
-    pg.connect(connectionString, function(err, client, done) {
-        // Handle connection errors
-        if (err) {
-            done();
-            console.log(err);
-            return res.status(500).json({success: false, data: err});
-        }
-        // SQL Query > Select Data
-        const query = client.query('SELECT * FROM environmental ORDER BY id ASC;');
-        // Stream results back one row at a time
-        query.on('row', function(row) {
-            results.push(row);
-        });
-        // After all data is returned, close connection and return results
-        query.on('end', function() {
-            done();
-            return res.json(results);
-        });
-    });
-}
-
 // post to call the python script using nodejs python-shell
 function postRainbow(req, res, next) {
     PythonShell.run('rainbow.py', function (err, results) {
@@ -36,107 +12,6 @@ function postSparkle(req, res, next) {
         if (err) throw err;
         // results is an array consisting of messages collected during execution
         //console.log('results: %j', results);
-    });
-}
-
-function getLoadAvg(req, res, next) {
-    const results = [];
-    // Get a Postgres client from the connection pool
-    pg.connect(connectionString, function(err, client, done) {
-        // Handle connection errors
-        if (err) {
-            done();
-            console.log(err);
-            return res.status(500).json({success: false, data: err});
-        }
-        // SQL Query > Select Data
-        const query = client.query('SELECT * FROM loadavg ORDER BY id ASC;');
-        // Stream results back one row at a time
-        query.on('row', function(row) {
-            results.push(row);
-        });
-        // After all data is returned, close connection and return results
-        query.on('end', function() {
-            done();
-            return res.json(results);
-        });
-    });
-}
-
-// get only the last 'rows' number of rows from db
-function getSensorDataRows(req, res, next) {
-    const results = [];
-    const rows = req.params.rows;
-    // Get a Postgres client from the connection pool
-    pg.connect(connectionString, function(err, client, done) {
-        // Handle connection errors
-        if (err) {
-            done();
-            console.log(err);
-            return res.status(500).json({success: false, data: err});
-        }
-        // SQL Query > Select last 'rows' number of rows of Data
-        const query = client.query('SELECT * FROM (SELECT * FROM environmental ORDER BY id DESC LIMIT ($1)) AS temp ORDER BY id ASC', [rows]);
-        // Stream results back one row at a time
-        query.on('row', function(row) {
-            results.push(row);
-        });
-        // After all data is returned, close connection and return results
-        query.on('end', function() {
-            done();
-            return res.json(results);
-        });
-    });
-}
-
-function getSensorDataRange(req, res, next) {
-    const results = [];
-    const start = req.params.start;
-    const end = req.params.end;
-    // Get a Postgres client from the connection pool
-    pg.connect(connectionString, function(err, client, done) {
-        // Handle connection errors
-        if (err) {
-            done();
-            console.log(err);
-            return res.status(500).json({success: false, data: err});
-        }
-        // SQL Query > Select last 'rows' number of rows of Data
-        const query = client.query('SELECT * FROM environmental WHERE timestamp BETWEEN \'($1)\' AND \'($2)\'', [start, end]);
-        // Stream results back one row at a time
-        query.on('row', function(row) {
-            results.push(row);
-        });
-        // After all data is returned, close connection and return results
-        query.on('end', function() {
-            done();
-            return res.json(results);
-        });
-    });
-}
-
-function getLoadAvgRows(req, res, next) {
-    const results = [];
-    const rows = req.params.rows;
-    // Get a Postgres client from the connection pool
-    pg.connect(connectionString, function(err, client, done) {
-        // Handle connection errors
-        if (err) {
-            done();
-            console.log(err);
-            return res.status(500).json({success: false, data: err});
-        }
-        // SQL Query > Select last 'rows' number of rows of Data
-        const query = client.query('SELECT * FROM (SELECT * FROM loadavg ORDER BY id DESC LIMIT ($1)) AS temp ORDER BY id ASC', [rows]);
-        // Stream results back one row at a time
-        query.on('row', function(row) {
-            results.push(row);
-        });
-        // After all data is returned, close connection and return results
-        query.on('end', function() {
-            done();
-            return res.json(results);
-        });
     });
 }
 
@@ -170,8 +45,9 @@ function getSystemInfo(req, res, next) {
     });
 }
 
-function getNetStats(req, res, next) {
+function getSensorData(req, res, next) {
     const results = [];
+    const range = req.params.range;
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
         // Handle connection errors
@@ -180,8 +56,32 @@ function getNetStats(req, res, next) {
             console.log(err);
             return res.status(500).json({success: false, data: err});
         }
-        // SQL Query > Select Data
-        const query = client.query('SELECT * FROM netstats ORDER BY id ASC;');
+        switch (range) {
+            case 'today':
+                const query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'today\'');
+                break;
+            case 'yesterday':
+                const query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
+                break;
+            case '7days':
+                const query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'7 days\'');
+                break;
+            case '30days':
+                const query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'1 month\'');
+                break;
+            case 'curmonth':
+                const query = client.query('SELECT * FROM environmental WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)');
+                break;
+            case 'lastmonth':
+                const query = client.query('SELECT * FROM environmental WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
+                break;
+            // case 'custom':
+                    // const query = client.query('SELECT * FROM environmental WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
+                    // break;
+            default:
+                break;
+        }
+        
         // Stream results back one row at a time
         query.on('row', function(row) {
             results.push(row);
@@ -194,9 +94,9 @@ function getNetStats(req, res, next) {
     });
 }
 
-function getNetStatsRows(req, res, next) {
+function getLoadAvgData(req, res, next) {
     const results = [];
-    const rows = req.params.rows;
+    const range = req.params.range;
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
         // Handle connection errors
@@ -205,8 +105,32 @@ function getNetStatsRows(req, res, next) {
             console.log(err);
             return res.status(500).json({success: false, data: err});
         }
-        // SQL Query > Select last 'rows' number of rows of Data
-        const query = client.query('SELECT * FROM (SELECT * FROM netstats ORDER BY id DESC LIMIT ($1)) AS temp ORDER BY id ASC', [rows]);
+        switch (range) {
+            case 'today':
+                const query = client.query('SELECT * FROM loadavg WHERE timestamp > TIMESTAMP \'today\'');
+                break;
+            case 'yesterday':
+                const query = client.query('SELECT * FROM loadavg WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
+                break;
+            case '7days':
+                const query = client.query('SELECT * FROM loadavg WHERE timestamp > current_date - INTERVAL \'7 days\'');
+                break;
+            case '30days':
+                const query = client.query('SELECT * FROM loadavg WHERE timestamp > current_date - INTERVAL \'1 month\'');
+                break;
+            case 'curmonth':
+                const query = client.query('SELECT * FROM loadavg WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)');
+                break;
+            case 'lastmonth':
+                const query = client.query('SELECT * FROM loadavg WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
+                break;
+            // case 'custom':
+                    // const query = client.query('SELECT * FROM loadavg WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
+                    // break;
+            default:
+                break;
+        }
+        
         // Stream results back one row at a time
         query.on('row', function(row) {
             results.push(row);
@@ -219,8 +143,9 @@ function getNetStatsRows(req, res, next) {
     });
 }
 
-function getDiskStats(req, res, next) {
+function getNetStatsData(req, res, next) {
     const results = [];
+    const range = req.params.range;
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
         // Handle connection errors
@@ -229,8 +154,32 @@ function getDiskStats(req, res, next) {
             console.log(err);
             return res.status(500).json({success: false, data: err});
         }
-        // SQL Query > Select Data
-        const query = client.query('SELECT * FROM diskstats ORDER BY id ASC;');
+        switch (range) {
+            case 'today':
+                const query = client.query('SELECT * FROM netstats WHERE timestamp > TIMESTAMP \'today\'');
+                break;
+            case 'yesterday':
+                const query = client.query('SELECT * FROM netstats WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
+                break;
+            case '7days':
+                const query = client.query('SELECT * FROM netstats WHERE timestamp > current_date - INTERVAL \'7 days\'');
+                break;
+            case '30days':
+                const query = client.query('SELECT * FROM netstats WHERE timestamp > current_date - INTERVAL \'1 month\'');
+                break;
+            case 'curmonth':
+                const query = client.query('SELECT * FROM netstats WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)');
+                break;
+            case 'lastmonth':
+                const query = client.query('SELECT * FROM netstats WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
+                break;
+            // case 'custom':
+                    // const query = client.query('SELECT * FROM netstats WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
+                    // break;
+            default:
+                break;
+        }
+        
         // Stream results back one row at a time
         query.on('row', function(row) {
             results.push(row);
@@ -243,9 +192,9 @@ function getDiskStats(req, res, next) {
     });
 }
 
-function getDiskStatsRows(req, res, next) {
+function getDiskStatsData(req, res, next) {
     const results = [];
-    const rows = req.params.rows;
+    const range = req.params.range;
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
         // Handle connection errors
@@ -254,8 +203,32 @@ function getDiskStatsRows(req, res, next) {
             console.log(err);
             return res.status(500).json({success: false, data: err});
         }
-        // SQL Query > Select last 'rows' number of rows of Data
-        const query = client.query('SELECT * FROM (SELECT * FROM diskstats ORDER BY id DESC LIMIT ($1)) AS temp ORDER BY id ASC', [rows]);
+        switch (range) {
+            case 'today':
+                const query = client.query('SELECT * FROM diskstats WHERE timestamp > TIMESTAMP \'today\'');
+                break;
+            case 'yesterday':
+                const query = client.query('SELECT * FROM diskstats WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
+                break;
+            case '7days':
+                const query = client.query('SELECT * FROM diskstats WHERE timestamp > current_date - INTERVAL \'7 days\'');
+                break;
+            case '30days':
+                const query = client.query('SELECT * FROM diskstats WHERE timestamp > current_date - INTERVAL \'1 month\'');
+                break;
+            case 'curmonth':
+                const query = client.query('SELECT * FROM diskstats WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)');
+                break;
+            case 'lastmonth':
+                const query = client.query('SELECT * FROM diskstats WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
+                break;
+            // case 'custom':
+                    // const query = client.query('SELECT * FROM diskstats WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
+                    // break;
+            default:
+                break;
+        }
+        
         // Stream results back one row at a time
         query.on('row', function(row) {
             results.push(row);
@@ -267,53 +240,3 @@ function getDiskStatsRows(req, res, next) {
         });
     });
 }
-
-function getSensorDataToday(req, res, next) {
-    const results = [];
-    // Get a Postgres client from the connection pool
-    pg.connect(connectionString, function(err, client, done) {
-        // Handle connection errors
-        if (err) {
-            done();
-            console.log(err);
-            return res.status(500).json({success: false, data: err});
-        }
-        // SQL Query > Select only todays rows
-        const query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'today\'');
-        // Stream results back one row at a time
-        query.on('row', function(row) {
-            results.push(row);
-        });
-        // After all data is returned, close connection and return results
-        query.on('end', function() {
-            done();
-            return res.json(results);
-        });
-    });
-}
-
-function getSensorDataYesterday(req, res, next) {
-    const results = [];
-    // Get a Postgres client from the connection pool
-    pg.connect(connectionString, function(err, client, done) {
-        // Handle connection errors
-        if (err) {
-            done();
-            console.log(err);
-            return res.status(500).json({success: false, data: err});
-        }
-        // SQL Query > Select only todays rows
-        const query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
-        // Stream results back one row at a time
-        query.on('row', function(row) {
-            results.push(row);
-        });
-        // After all data is returned, close connection and return results
-        query.on('end', function() {
-            done();
-            return res.json(results);
-        });
-    });
-}
-
-
