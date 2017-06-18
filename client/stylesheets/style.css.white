@@ -10,7 +10,7 @@ html, body {
 body {
     font: 14px/1 'Open Sans', sans-serif;
     color: #555;
-    background: #ccc;
+    background: #fff;
 }
 
 a {
@@ -40,6 +40,7 @@ a {
     stroke-width: 1px;
 }
 
+/* for black chart background */
 /*.chart {
     background: #000;
 }
@@ -124,11 +125,6 @@ h1.colorful2 {
     -webkit-text-fill-color: transparent;
 }
 
-div.data-rows {
-    text-align: center;
-    margin: 0 auto;
-}
-
 p.waiting {
     color: #000;
     text-align: center;
@@ -147,8 +143,8 @@ div.serverinfo {
     text-align: center;
     padding: 10px 20px;
     color: #1e90ff;
-    border-style: inset;
-    background: #191970;
+    /*border-style: inset;*/
+    background: #fff;
 }
 
 .clearfix:after {
@@ -235,7 +231,7 @@ div.author {
     max-width: 100%;
     text-align: center;
     background: #fff;
-    border-style: inset;
+    /*border-style: inset;*/
 }
 
 .content {

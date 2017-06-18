@@ -13,6 +13,7 @@ logMap.set('1e+7', '10M');
 logMap.set('1e+8', '100M');
 logMap.set('1e+9', '1G');
 
+// format the axis labels to human readable form
 function getFormat(n) {
     let result = (n >= 1000000 ? (n / 1048576).toFixed(2) + ' MBytes' :
     n < 1000 ? n.toFixed(2) + ' Bytes':
@@ -35,6 +36,16 @@ app.service('dataService', function($http) {
 
     return { getData: getData };
 });
+
+//app.service('dataService', function($http) {
+//    var getData = function(start, end) {
+//        return $http.get('/db/env_sensors/' + start + ',' + end).then(function(response) {
+//            return response;
+//        });
+//    }
+//
+//    return { getData: getData };
+//});
 
 app.service('loadAvgService', function ($http) {
     var getLoadAvg = function(rows) {
@@ -81,73 +92,90 @@ app.service('diskstatsService', function ($http) {
     return { getDiskStats: getDiskStats };
 });
 
-// only retrieve 5 days (480 rows) for display
+// retrieve 5 days (480 rows) of data for default view
 app.controller('rpi3Ctrl', function($scope, dataService, loadAvgService, netstatsService, diskstatsService) {
     $scope.data0 = [];
     $scope.isLoaded0 = false;
-    dataService.getData(480).then(function(response) {
-        $scope.data0 = response;
-        $scope.data0.data.forEach(function(row) {
-            row.timestamp = new Date(row.timestamp);
-            // temperature is now celsius in the db, convert the old fahrenheit to celsius for now
-            // this can probably be removed once we move beyond the 5 day point
-            // HACK ALERT: making some serious assumptions here...
-            if (row.calibrated_temp > 60.0) {
-                row.calibrated_temp = ((row.calibrated_temp - 32.0) * 0.55556).toFixed(1);
-            }
-            if (row.cpu_temp > 60.0) {
-                row.cpu_temp = ((row.cpu_temp - 32.0) * 0.55556).toFixed(1);
-            }
-        });
-        $scope.isLoaded0 = true;
-    }, function() {
-        $scope.error = 'Unable to GET environmental data';
-    });
-
     $scope.data1 = [];
     $scope.isLoaded1 = false;
-    loadAvgService.getLoadAvg(480).then(function(response) {
-        $scope.data1 = response;
-        $scope.data1.data.forEach(function(row) {
-            row.timestamp = new Date(row.timestamp);
-        });
-        $scope.isLoaded1 = true;
-    }, function() {
-        $scope.error = 'Unable to GET loadavg data';
-    });
-
     $scope.data2 = [];
     $scope.isLoaded2 = false;
-    netstatsService.getNetStats(480).then(function(response) {
-        $scope.data2 = response;
-        $scope.data2.data.forEach(function(row) {
-            row.timestamp = new Date(row.timestamp);
-            // this data plotted on log axis, make sure 
-            // there are no zero | negative data points
-            if (row.tx_rate < 0.1) {row.tx_rate = 0.1;}
-            if (row.rx_rate < 0.1) {row.rx_rate = 0.1;}
-        });
-        $scope.isLoaded2 = true;
-    }, function() {
-        $scope.error = 'Unable to GET netstats data';
-    });
-
     $scope.data3 = [];
     $scope.isLoaded3 = false;
-    diskstatsService.getDiskStats(480).then(function(response) {
-        $scope.data3 = response;
-        $scope.data3.data.forEach(function(row) {
-            row.timestamp = new Date(row.timestamp);
-            // this data plotted on log axis, make sure 
-            // there are no zero | negative data points
-            if (row.rbytes < 0.1) {row.rbytes = 0.1;}
-            if (row.wbytes < 0.1) {row.wbytes = 0.1;}
-        });
-        $scope.isLoaded3 = true;
-    }, function() {
-        $scope.error = 'Unable to GET diskstats data';
-    });
+    $scope.items = [
+        {name: '1 Day',   value: 96},
+        {name: '2 Days',  value: 192},
+        {name: '3 Days',  value: 288},
+        {name: '4 Days',  value: 384},
+        {name: '5 Days',  value: 480},
+        {name: '10 Days', value: 960},
+        {name: '25 Days', value: 1920},
+        {name: '50 Days', value: 2880},
+        {name: 'All', value: 0}
+    ];
+    $scope.objSelectedRow = {selectedRow: $scope.items[0]}; // default to 5 days
 
+    $scope.updateData = function() {
+        dataService.getData($scope.objSelectedRow.selectedRow.value).then(function(response) {
+            $scope.data0 = response;
+            $scope.data0.data.forEach(function(row) {
+                row.timestamp = new Date(row.timestamp);
+                // temperature is now celsius in the db, convert the old fahrenheit to celsius for now
+                // this can probably be removed once we move beyond the 5 day point
+                // HACK ALERT: making some serious assumptions here...
+                if (row.calibrated_temp > 60.0) {
+                    row.calibrated_temp = ((row.calibrated_temp - 32.0) * 0.55556).toFixed(1);
+                }
+                if (row.cpu_temp > 65.0) {
+                    row.cpu_temp = ((row.cpu_temp - 32.0) * 0.55556).toFixed(1);
+                }
+            });
+            $scope.isLoaded0 = true;
+        }, function() {
+            $scope.error = 'Unable to GET environmental data';
+        });
+
+        loadAvgService.getLoadAvg($scope.objSelectedRow.selectedRow.value).then(function(response) {
+            $scope.data1 = response;
+            $scope.data1.data.forEach(function(row) {
+                row.timestamp = new Date(row.timestamp);
+            });
+            $scope.isLoaded1 = true;
+        }, function() {
+            $scope.error = 'Unable to GET loadavg data';
+        });
+       
+        netstatsService.getNetStats($scope.objSelectedRow.selectedRow.value).then(function(response) {
+            $scope.data2 = response;
+            $scope.data2.data.forEach(function(row) {
+                row.timestamp = new Date(row.timestamp);
+                // this data plotted on log axis, make sure 
+                // there are no zero | negative data points
+                if (row.tx_rate < 0.1) {row.tx_rate = 0.1;}
+                if (row.rx_rate < 0.1) {row.rx_rate = 0.1;}
+            });
+            $scope.isLoaded2 = true;
+        }, function() {
+            $scope.error = 'Unable to GET netstats data';
+        });
+
+        diskstatsService.getDiskStats($scope.objSelectedRow.selectedRow.value).then(function(response) {
+            $scope.data3 = response;
+            $scope.data3.data.forEach(function(row) {
+                row.timestamp = new Date(row.timestamp);
+                // this data plotted on log axis, make sure 
+                // there are no zero | negative data points
+                if (row.rbytes < 0.1) {row.rbytes = 0.1;}
+                if (row.wbytes < 0.1) {row.wbytes = 0.1;}
+            });
+            $scope.isLoaded3 = true;
+        }, function() {
+            $scope.error = 'Unable to GET diskstats data';
+        });
+    }
+   
+    // this function gets and updates the data
+    $scope.updateData();
 
     $scope.options0 = {
         zoom: { x: true, y: false },

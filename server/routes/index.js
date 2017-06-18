@@ -6,12 +6,14 @@ const path = require('path');
 const connectionString = 'postgres://localhost:5432/serverstats';
 PythonShell.defaultOptions = { scriptPath: 'server/python/' };
 
+var db = require('queries');
+
 // GET home page
 router.get('/', function(req, res, next) {
     res.sendFile(path.join(__dirname, '..', '..', 'client', 'views', 'index.html'));
 });
 
-router.get('/db/env_sensors', function(req, res, next) {
+router.get('/db/env_sensors', /function(req, res, next) {
     const results = [];
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
@@ -90,6 +92,32 @@ router.get('/db/env_sensors/:rows', function(req, res, next) {
         }
         // SQL Query > Select last 'rows' number of rows of Data
         const query = client.query('SELECT * FROM (SELECT * FROM environmental ORDER BY id DESC LIMIT ($1)) AS temp ORDER BY id ASC', [rows]);
+        // Stream results back one row at a time
+        query.on('row', function(row) {
+            results.push(row);
+        });
+        // After all data is returned, close connection and return results
+        query.on('end', function() {
+            done();
+            return res.json(results);
+        });
+    });
+});
+
+router.get('/db/env_sensors/:start:end', function(req, res, next) {
+    const results = [];
+    const start = req.params.start;
+    const end = req.params.end;
+    // Get a Postgres client from the connection pool
+    pg.connect(connectionString, function(err, client, done) {
+        // Handle connection errors
+        if (err) {
+            done();
+            console.log(err);
+            return res.status(500).json({success: false, data: err});
+        }
+        // SQL Query > Select last 'rows' number of rows of Data
+        const query = client.query('SELECT * FROM environmental WHERE timestamp BETWEEN \'($1)\' AND \'($2)\'', [start, end]);
         // Stream results back one row at a time
         query.on('row', function(row) {
             results.push(row);

@@ -124,11 +124,6 @@ h1.colorful2 {
     -webkit-text-fill-color: transparent;
 }
 
-div.data-rows {
-    text-align: center;
-    margin: 0 auto;
-}
-
 p.waiting {
     color: #000;
     text-align: center;

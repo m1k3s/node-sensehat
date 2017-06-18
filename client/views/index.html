@@ -11,8 +11,8 @@
         <script src="scripts/d3/d3.min.js"></script>
         <script src="scripts/n3-charts/build/LineChart.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    </head>
-    <body ng-app="rpi3" ng-controller='rpi3Ctrl'>
+   </head>
+   <body ng-app="rpi3" ng-controller='rpi3Ctrl'>
         <div ng-if='!isLoaded0 || !isLoaded1 || !isLoaded2 || !isLoaded3'>
         <center><div class='loading'><div class='inner'></div></div></center>
         </div>
@@ -71,6 +71,16 @@
                             <linechart data="data3" options="options5"></linechart>
                         </div>
                     </div>
+                </div>
+                <div class='data-rows'>
+                    Choose number of days to view:&nbsp;
+                    <select
+                        ng-init="objSelectedRow.selectedRow = items[0]"
+                        ng-model="objSelectedRow.selectedRow"
+                        ng-options="item as item.name for item in items"
+                        ng-change="updateData()"
+                        style="background: transparent; border: 1px solid #ccc;">
+                    </select>
                 </div>
             </div>
             <br>
@@ -133,13 +143,13 @@
             </div><br>
             <div class='author'>Michael Sheppard, May 2017</div><br>
         </div>
-        <script>
-        // refresh the server info every 10 seconds
-        $(document).ready( function () {
-            getServerInfo();
-            getSystemInfo();
-        });
-        setInterval(getServerInfo, 10000);
+        <script type="text/javascript">
+            // refresh the server info every 10 seconds
+            $(document).ready( function () {
+                getServerInfo();
+                getSystemInfo();
+            });
+            setInterval(getServerInfo, 10000);
         </script>
     </body>
 </html>
