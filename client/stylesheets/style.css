@@ -249,9 +249,9 @@ div.author {
     border-top: 1px solid #ddd;
 }
  
-.main input {
+/*.main input {
     display: none;
-}
+}*/
 
 label {
     display: inline-block;
