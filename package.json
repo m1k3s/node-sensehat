@@ -9,6 +9,7 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
     "cookie-parser": "~1.4.3",
+    "daterangepicker": "^2.1.25",
     "debug": "^2.6.8",
     "express": "^4.15.3",
     "jquery": "^3.2.1",
