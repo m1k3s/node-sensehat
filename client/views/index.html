@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type: "text/css" href="scripts/n3-charts/build/LineChart.css">
         <link rel="stylesheet" type: "text/css" href="stylesheets/style.css">
-        <!--link href="scripts/jquery-ui-dist/jquery-ui.min.css" rel="stylesheet">
+        <!-- link href="scripts/jquery-ui-dist/jquery-ui.min.css" rel="stylesheet">
         <link href="scripts/jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.css" rel="stylesheet" -->
         <script src="scripts/angular/angular.min.js"></script>
         <script type="text/javascript" src="javascripts/app.js"> </script>
@@ -13,11 +13,11 @@
         <script src="scripts/d3/d3.min.js"></script>
         <script src="scripts/n3-charts/build/LineChart.min.js"></script>
         <script src="scripts/jquery/dist/jquery.min.js"></script>
-        <!--script src="scripts/jquery-ui-dist/jquery-ui.min.js"></script>
+        <!-- script src="scripts/jquery-ui-dist/jquery-ui.min.js"></script>
         <script src="scripts/moment/min/moment.min.js"></script>
         <script src="scripts/jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.min.js"></script -->
-   </head>
-   <body ng-app="rpi3" ng-controller='rpi3Ctrl'>
+    </head>
+    <body ng-app="rpi3" ng-controller='rpi3Ctrl'>
         <div ng-if='!isLoaded0 || !isLoaded1 || !isLoaded2 || !isLoaded3'>
         <center><div class='loading'><div class='inner'></div></div></center>
         </div>
@@ -78,14 +78,24 @@
                     </div>
                 </div>
                 <div class='data-rows'>
-                    Choose range of data to view:&nbsp;
-                    <!-- input class='raw' id='input1' -->
+                    Select a range view:&nbsp;
+                    <!--input name="datepicker" style="width: 255px; padding: 4px 6px;">
+                    <script type="text/javascript">
+                        //$(function() {
+                            $('input[name="datepicker"]').daterangepicker( {
+                                datepickerOptions: {
+                                    numberOfMonths: 2
+                                }
+                            });
+                        //});
+                    </script -->
+
                     <select
                         ng-init="objSelectedRow.selectedRow = items[0]"
                         ng-model="objSelectedRow.selectedRow"
                         ng-options="item as item.name for item in items"
                         ng-change="updateData()"
-                        style="background: transparent; border: 1px solid #ccc;">
+                        style="width: 180px; padding: 4px 6px; background: transparent; border: 1px solid #ccc;">
                     </select>
                 </div>
             </div>
@@ -156,40 +166,6 @@
                 getSystemInfo();
             });
             setInterval(getServerInfo, 10000);
-
-            //$("#input1").daterangepicker({
-            //    presetRanges: [{
-            //        text: 'Today',
-            //        dateStart: function() { return moment() },
-            //        dateEnd: function() { return moment() }
-            //    }, {
-            //        text: 'Yeserday',
-            //        dateStart: function() { return moment().subtract('days', 1) },
-            //        dateEnd: function() { return moment().subtract('days', 1) }
-            //    }, {
-            //        text: 'Last 7 Days',
-            //        dateStart: function() { return moment() },
-            //        dateEnd: function() { return moment().subtract('days', 6) }
-            //    }, {
-            //        text: 'Last 30 Days',
-            //        dateStart: function() { return moment().subtract('days', 1) },
-            //        dateEnd: function() { return moment().subtract('days', 30) }
-            //    }, {
-            //        text: 'This Month',
-            //        dateStart: function() { return moment().subtract('days', 1) },
-            //        dateEnd: function() { return moment().subtract('days', 30) }
-            //    }, {
-            //        text: 'Last Month',
-            //        dateStart: function() { return moment().subtract('days', 1) },
-            //        dateEnd: function() { return moment().subtract('days', 30) }
-            //    }]
-            //    applyOnMenuSelect: false,
-            //    datepickerOptions: {
-            //        minDate: 0,
-            //        maxDate: null,
-            //        numberOfMonths: 2
-            //    }
-            //});
         </script>
     </body>
 </html>
