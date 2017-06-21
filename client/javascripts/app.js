@@ -73,7 +73,9 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
         {name: 'Last 7 Days',   value: '7days'},
         {name: 'Last 30 Days',  value: '30days'},
         {name: 'This Month',    value: 'curmonth'},
-        {name: 'Last Month',    value: 'lastmonth'}//,
+        {name: 'Last Month',    value: 'lastmonth'},
+        {name: 'Last 2 Months', value: 'last2months'},
+        {name: 'Last 3 Months', value: 'last3months'}//,
         //{name: 'Custom Range',  value: 'custom'}
     ];
     $scope.objSelectedRow = {selectedRow: $scope.items[0]}; // default to 'today'

@@ -23,6 +23,7 @@ router.get('/db/env_sensors/:range', function getSensorData(req, res, next) {
             return res.status(500).json({success: false, data: err});
         }
         var query = [];
+        //query = queryFunction(query, 'environmental', range);
         switch (range) {
             case 'today':
                 query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'today\'');
@@ -41,6 +42,12 @@ router.get('/db/env_sensors/:range', function getSensorData(req, res, next) {
                 break;
             case 'lastmonth':
                 query = client.query('SELECT * FROM environmental WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
+                break;
+            case 'last2months':
+                query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'2 months\'');
+                break;
+            case 'last3months':
+                query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'3 months\'');
                 break;
             // case 'custom':
                 // query = client.query('SELECT * FROM environmental WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
@@ -92,6 +99,12 @@ router.get('/db/loadavg/:range', function getLoadAvgData(req, res, next) {
             case 'lastmonth':
                 query = client.query('SELECT * FROM loadavg WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
                 break;
+            case 'last2months':
+                query = client.query('SELECT * FROM loadavg WHERE timestamp > current_date - INTERVAL \'2 months\'');
+                break;
+            case 'last3months':
+                query = client.query('SELECT * FROM loadavg WHERE timestamp > current_date - INTERVAL \'3 months\'');
+                break;
             // case 'custom':
                     // const query = client.query('SELECT * FROM loadavg WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
                     // break;
@@ -141,6 +154,12 @@ router.get('/db/netstats/:range', function getNetStatsData(req, res, next) {
                 break;
             case 'lastmonth':
                 query = client.query('SELECT * FROM netstats WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
+                break;
+            case 'last2months':
+                query = client.query('SELECT * FROM netstats WHERE timestamp > current_date - INTERVAL \'2 months\'');
+                break;
+            case 'last3months':
+                query = client.query('SELECT * FROM netstats WHERE timestamp > current_date - INTERVAL \'3 months\'');
                 break;
             // case 'custom':
                     // const query = client.query('SELECT * FROM netstats WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
@@ -192,6 +211,12 @@ router.get('/db/diskstats/:range', function getDiskStatsData(req, res, next) {
             case 'lastmonth':
                 query = client.query('SELECT * FROM diskstats WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
                 break;
+            case 'last2months':
+                query = client.query('SELECT * FROM diskstats WHERE timestamp > current_date - INTERVAL \'2 months\'');
+                break;
+            case 'last3months':
+                query = client.query('SELECT * FROM diskstats WHERE timestamp > current_date - INTERVAL \'3 months\'');
+                break;
             // case 'custom':
                     // const query = client.query('SELECT * FROM diskstats WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
                     // break;
@@ -210,6 +235,41 @@ router.get('/db/diskstats/:range', function getDiskStatsData(req, res, next) {
         });
     });
 });
+
+//var queryFunction = function getQueryData(query, table, range) {
+//     switch (range) {
+//            case 'today':
+//                query = client.query('SELECT * FROM ($1) WHERE timestamp > TIMESTAMP \'today\'', [table]);
+//                break;
+//            case 'yesterday':
+//                query = client.query('SELECT * FROM ($1) WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'', [table]);
+//                break;
+//            case '7days':
+//                query = client.query('SELECT * FROM ($1) WHERE timestamp > current_date - INTERVAL \'7 days\'', [table]);
+//                break;
+//            case '30days':
+//                query = client.query('SELECT * FROM ($1) WHERE timestamp > current_date - INTERVAL \'1 month\'', [table]);
+//                break;
+//            case 'curmonth':
+//                query = client.query('SELECT * FROM ($1) WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)', [table]);
+//                break;
+//            case 'lastmonth':
+//                query = client.query('SELECT * FROM ($1) WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)', [table]);
+//                break;
+//            case 'last2months':
+//                query = client.query('SELECT * FROM ($1) WHERE timestamp > current_date - INTERVAL \'2 months\'', [table]);
+//                break;
+//            case 'last3months':
+//                query = client.query('SELECT * FROM ($1) WHERE timestamp > current_date - INTERVAL \'3 months\'', [table]);
+//                break;
+//            // case 'custom':
+//                    // const query = client.query('SELECT * FROM ($1) WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'', [table]);
+//                    // break;
+//            default:
+//                break;
+//    }
+//    return query;
+//}
 
 router.get('/serverinfo', function getServerInfo(req, res, next) {
     let results = '';
