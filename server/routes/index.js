@@ -6,6 +6,42 @@ const path = require('path');
 const connectionString = 'postgres://localhost:5432/serverstats';
 PythonShell.defaultOptions = { scriptPath: 'server/python/' };
 
+function buildQuery(table, range) {
+    var query = [];
+    switch (range) {
+        case 'today':
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > TIMESTAMP \'today\'';
+            break;
+        case 'yesterday':
+                query = 'SELECT * FROM ' + table + ' WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'';
+                break;
+        case '7days':
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'7 days\'';
+            break;
+        case '30days':
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'1 month\'';
+            break;
+        case 'curmonth':
+            query = 'SELECT * FROM ' + table + ' WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)';
+            break;
+        case 'lastmonth':
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp < date_trunc(\'month\', current_date)';
+                break;
+            case 'last2months':
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'2 months\'';
+            break;
+        case 'last3months':
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'3 months\'';
+            break;
+        // case 'custom':
+            // query = 'SELECT * FROM ' + table + ' WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'';
+            // break;
+        default:
+            break;
+    }
+    return query;
+}
+
 // GET home page
 router.get('/', function(req, res, next) {
     res.sendFile(path.join(__dirname, '..', '..', 'client', 'views', 'index.html'));
@@ -23,39 +59,9 @@ router.get('/db/env_sensors/:range', function getSensorData(req, res, next) {
             return res.status(500).json({success: false, data: err});
         }
         var query = [];
-        //query = queryFunction(query, 'environmental', range);
-        switch (range) {
-            case 'today':
-                query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'today\'');
-                break;
-            case 'yesterday':
-                query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
-                break;
-            case '7days':
-                query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'7 days\'');
-                break;
-            case '30days':
-                query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'1 month\'');
-                break;
-            case 'curmonth':
-                query = client.query('SELECT * FROM environmental WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)');
-                break;
-            case 'lastmonth':
-                query = client.query('SELECT * FROM environmental WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
-                break;
-            case 'last2months':
-                query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'2 months\'');
-                break;
-            case 'last3months':
-                query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'3 months\'');
-                break;
-            // case 'custom':
-                // query = client.query('SELECT * FROM environmental WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
-                // break;
-            default:
-                break;
-        }
-        
+        var queryStr = buildQuery('environmental', range);
+        query = client.query(queryStr);
+
         // Stream results back one row at a time
         query.on('row', function(row) {
             results.push(row);
@@ -80,37 +86,8 @@ router.get('/db/loadavg/:range', function getLoadAvgData(req, res, next) {
             return res.status(500).json({success: false, data: err});
         }
         var query = [];
-        switch (range) {
-            case 'today':
-                query = client.query('SELECT * FROM loadavg WHERE timestamp > TIMESTAMP \'today\'');
-                break;
-            case 'yesterday':
-                query = client.query('SELECT * FROM loadavg WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
-                break;
-            case '7days':
-                query = client.query('SELECT * FROM loadavg WHERE timestamp > current_date - INTERVAL \'7 days\'');
-                break;
-            case '30days':
-                query = client.query('SELECT * FROM loadavg WHERE timestamp > current_date - INTERVAL \'1 month\'');
-                break;
-            case 'curmonth':
-                query = client.query('SELECT * FROM loadavg WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)');
-                break;
-            case 'lastmonth':
-                query = client.query('SELECT * FROM loadavg WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
-                break;
-            case 'last2months':
-                query = client.query('SELECT * FROM loadavg WHERE timestamp > current_date - INTERVAL \'2 months\'');
-                break;
-            case 'last3months':
-                query = client.query('SELECT * FROM loadavg WHERE timestamp > current_date - INTERVAL \'3 months\'');
-                break;
-            // case 'custom':
-                    // const query = client.query('SELECT * FROM loadavg WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
-                    // break;
-            default:
-                break;
-        }
+        var queryStr = buildQuery('loadavg', range);
+        query = client.query(queryStr);
         
         // Stream results back one row at a time
         query.on('row', function(row) {
@@ -136,38 +113,9 @@ router.get('/db/netstats/:range', function getNetStatsData(req, res, next) {
             return res.status(500).json({success: false, data: err});
         }
         var query = [];
-        switch (range) {
-            case 'today':
-                query = client.query('SELECT * FROM netstats WHERE timestamp > TIMESTAMP \'today\'');
-                break;
-            case 'yesterday':
-                query = client.query('SELECT * FROM netstats WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
-                break;
-            case '7days':
-                query = client.query('SELECT * FROM netstats WHERE timestamp > current_date - INTERVAL \'7 days\'');
-                break;
-            case '30days':
-                query = client.query('SELECT * FROM netstats WHERE timestamp > current_date - INTERVAL \'1 month\'');
-                break;
-            case 'curmonth':
-                query = client.query('SELECT * FROM netstats WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)');
-                break;
-            case 'lastmonth':
-                query = client.query('SELECT * FROM netstats WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
-                break;
-            case 'last2months':
-                query = client.query('SELECT * FROM netstats WHERE timestamp > current_date - INTERVAL \'2 months\'');
-                break;
-            case 'last3months':
-                query = client.query('SELECT * FROM netstats WHERE timestamp > current_date - INTERVAL \'3 months\'');
-                break;
-            // case 'custom':
-                    // const query = client.query('SELECT * FROM netstats WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
-                    // break;
-            default:
-                break;
-        }
-        
+        var queryStr = buildQuery('netstats', range);
+        query = client.query(queryStr);
+                
         // Stream results back one row at a time
         query.on('row', function(row) {
             results.push(row);
@@ -192,38 +140,9 @@ router.get('/db/diskstats/:range', function getDiskStatsData(req, res, next) {
             return res.status(500).json({success: false, data: err});
         }
         var query = [];
-        switch (range) {
-            case 'today':
-                query = client.query('SELECT * FROM diskstats WHERE timestamp > TIMESTAMP \'today\'');
-                break;
-            case 'yesterday':
-                query = client.query('SELECT * FROM diskstats WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
-                break;
-            case '7days':
-                query = client.query('SELECT * FROM diskstats WHERE timestamp > current_date - INTERVAL \'7 days\'');
-                break;
-            case '30days':
-                query = client.query('SELECT * FROM diskstats WHERE timestamp > current_date - INTERVAL \'1 month\'');
-                break;
-            case 'curmonth':
-                query = client.query('SELECT * FROM diskstats WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)');
-                break;
-            case 'lastmonth':
-                query = client.query('SELECT * FROM diskstats WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
-                break;
-            case 'last2months':
-                query = client.query('SELECT * FROM diskstats WHERE timestamp > current_date - INTERVAL \'2 months\'');
-                break;
-            case 'last3months':
-                query = client.query('SELECT * FROM diskstats WHERE timestamp > current_date - INTERVAL \'3 months\'');
-                break;
-            // case 'custom':
-                    // const query = client.query('SELECT * FROM diskstats WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');
-                    // break;
-            default:
-                break;
-        }
-        
+        var queryStr = buildQuery('diskstats', range);
+        query = client.query(queryStr);
+                
         // Stream results back one row at a time
         query.on('row', function(row) {
             results.push(row);
@@ -236,41 +155,6 @@ router.get('/db/diskstats/:range', function getDiskStatsData(req, res, next) {
     });
 });
 
-//var queryFunction = function getQueryData(query, table, range) {
-//     switch (range) {
-//            case 'today':
-//                query = client.query('SELECT * FROM ($1) WHERE timestamp > TIMESTAMP \'today\'', [table]);
-//                break;
-//            case 'yesterday':
-//                query = client.query('SELECT * FROM ($1) WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'', [table]);
-//                break;
-//            case '7days':
-//                query = client.query('SELECT * FROM ($1) WHERE timestamp > current_date - INTERVAL \'7 days\'', [table]);
-//                break;
-//            case '30days':
-//                query = client.query('SELECT * FROM ($1) WHERE timestamp > current_date - INTERVAL \'1 month\'', [table]);
-//                break;
-//            case 'curmonth':
-//                query = client.query('SELECT * FROM ($1) WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)', [table]);
-//                break;
-//            case 'lastmonth':
-//                query = client.query('SELECT * FROM ($1) WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)', [table]);
-//                break;
-//            case 'last2months':
-//                query = client.query('SELECT * FROM ($1) WHERE timestamp > current_date - INTERVAL \'2 months\'', [table]);
-//                break;
-//            case 'last3months':
-//                query = client.query('SELECT * FROM ($1) WHERE timestamp > current_date - INTERVAL \'3 months\'', [table]);
-//                break;
-//            // case 'custom':
-//                    // const query = client.query('SELECT * FROM ($1) WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'', [table]);
-//                    // break;
-//            default:
-//                break;
-//    }
-//    return query;
-//}
-
 router.get('/serverinfo', function getServerInfo(req, res, next) {
     let results = '';
     pyshell = new PythonShell('getserverinfo.py', {mode: 'json'});
@@ -281,7 +165,6 @@ router.get('/serverinfo', function getServerInfo(req, res, next) {
 
     pyshell.end(function(err) {
         if (err) throw err;
-        //console.log('finished getting server info');
         return res.json(results);
     });
 });
@@ -296,11 +179,9 @@ router.get('/sysinfo', function getSystemInfo(req, res, next) {
 
     pyshell.end(function(err) {
         if (err) throw err;
-        //console.log('finished getting server info');
         return res.json(results);
     });
 });
-
 
 router.post('/rainbow', function postRainbow(req, res, next) {
     PythonShell.run('rainbow.py', function (err, results) {
