@@ -85,7 +85,6 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
             $scope.data0 = response;
             $scope.data0.data.forEach(function(row) {
                 row.timestamp = new Date(row.timestamp);
-                // temperature is now celsius in the db, convert the old fahrenheit to celsius for now
                 // this can probably be removed once we move beyond the 5 day point
                 // HACK ALERT: making some serious assumptions here...
                 if (row.calibrated_temp > 60.0) {
