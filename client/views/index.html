@@ -7,7 +7,7 @@
         <link rel="stylesheet" type: "text/css" href="stylesheets/style.css">
         <script src="scripts/angular/angular.min.js"></script>
         <script type="text/javascript" src="javascripts/app.js"> </script>
-        <script type="text/javascript" src="javascripts/buttonFunctions.js"></script>
+        <script type="text/javascript" src="javascripts/clientFunctions.js"></script>
         <script src="scripts/d3/d3.min.js"></script>
         <script src="scripts/n3-charts/build/LineChart.min.js"></script>
         <script src="scripts/jquery/dist/jquery.min.js"></script>
@@ -78,13 +78,30 @@
                         ng-init="objSelectedRow.selectedRow = items[0]"
                         ng-model="objSelectedRow.selectedRow"
                         ng-options="item as item.name for item in items"
-                        ng-change="updateData()"
-                        style="width: 180px; padding: 4px 6px; background: transparent; border: 1px solid #ccc;">
+                        ng-change="updateData()">
                     </select>
                 </div>
             </div>
             <br>
-
+            <div class='serverinfo'>
+                <div class='hostname' id='host'>HostName: Waiting...</div>
+                <div class='information' id='kernel' style='color: #0000cc;'>Waiting...</div>
+                <br>
+                <div class='information' id='orientation'>Current Orientation: Waiting...</div>
+                <div class='information' id='loadavg'>Server Load: Waiting...</div>
+                <div class='information' id='uptime'>Uptime: waiting...</div>
+                <br>
+                <div class='information' id='diskspace' style='color: #229b22;'>Waiting...</div>
+                <div class='information' id='memory' style='color: #229b22;'>Waiting...</div>
+                <!-- p>Execute functions on the server</p>
+                <div class='btn-group'>
+                    <button class="button button-shadow" onclick="doRainbow()">Rainbow</button>
+                    <button class="button button-shadow" onclick="doSparkle()">Sparkle</button>
+                    <button class="button button-shadow" onclick="notImplemented()">Nothin'</button>
+                    <button class="button button-shadow" onclick="notImplemented()">Nope</button>
+                </div -->
+            </div>
+            <br>
             <p><h1 class="colorful2">Polaroids</h1></p>
             <div class='container'> <!-- picture div -->
                 <div class='polaroid' align: 'center'>
@@ -124,23 +141,7 @@
                 interface (DSI).
                 </p>
             </div>
-            <div class='serverinfo'>
-                <div class='hostname' id='host'></div>
-                <div class='information' id='kernel'>Waiting...</div>
-                <div class='information' id='orientation'>Current Orientation: Waiting...</div>
-                <div class='information' id='loadavg'>Server Load: Waiting...</div>
-                <div class='information' id='uptime' style='color: #ff4500;'>Uptime: waiting...</div>
-                <br>
-                <div class='information' id='diskspace' style='color: #228b22;'>Waiting...</div>
-                <div class='information' id='memory' style='color: #228b22;'>Waiting...</div>
-                <!-- p>Execute functions on the server</p>
-                <div class='btn-group'>
-                    <button class="button button-shadow" onclick="doRainbow()">Rainbow</button>
-                    <button class="button button-shadow" onclick="doSparkle()">Sparkle</button>
-                    <button class="button button-shadow" onclick="notImplemented()">Nothin'</button>
-                    <button class="button button-shadow" onclick="notImplemented()">Nope</button>
-                </div -->
-            </div><br>
+            <hr style="width: 60%;">
             <div class='author'>Michael Sheppard, May 2017</div><br>
         </div>
         <script type="text/javascript">

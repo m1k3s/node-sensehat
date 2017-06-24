@@ -146,15 +146,23 @@ div.container {
 div.serverinfo {
     text-align: center;
     padding: 10px 20px;
-    color: #1e90ff;
+    /*color: #1e90ff;*/
     border-style: inset;
-    background: #191970;
+    /*background: #191970;*/
+    background: #fff;
 }
 
 .clearfix:after {
     content: "";
     display: table;
     clear: both;
+}
+
+select {
+    width: 120px;
+    padding: 4px 6px;
+    background: transparent;
+    border: 1px solid #ccc;
 }
 
 div.explanation {
@@ -196,9 +204,10 @@ div.explanation {
 
 div.information {
     text-align: center;
-    color: #1e90ff;
+    color: #8b0000;
     font-family: Monospace;
     font-size: 1.5em;
+    font-weight: bold;
     margin-left: 35px;
     margin-right: 35px;
     margin-top: 5px;
@@ -207,7 +216,7 @@ div.information {
 
 div.hostname {
     text-align: center;
-    color: #ffd700;
+    color: #ff1493;
     font-size: 2em;
     font-weight: bold;
     padding: 5px 0;
