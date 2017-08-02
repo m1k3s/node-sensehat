@@ -115,8 +115,8 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 row.timestamp = new Date(row.timestamp);
                 // this data plotted on log axis, make sure 
                 // there are no zero | negative data points
-                if (row.tx_rate < 0.1) {row.tx_rate = 0.1;}
-                if (row.rx_rate < 0.1) {row.rx_rate = 0.1;}
+                if (row.tx_rate < 1) {row.tx_rate = 1;}
+                if (row.rx_rate < 1) {row.rx_rate = 1;}
             });
             $scope.isLoaded2 = true;
         }, function() {
