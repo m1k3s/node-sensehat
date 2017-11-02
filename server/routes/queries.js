@@ -58,22 +58,22 @@ function getSensorData(req, res, next) {
         }
         switch (range) {
             case 'today':
-                const query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'today\'');
+                const query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'today\' ORDER BY TIMESTAMP');
                 break;
             case 'yesterday':
-                const query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'');
+                const query = client.query('SELECT * FROM environmental WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\' ORDER BY TIMESTAMP');
                 break;
             case '7days':
-                const query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'7 days\'');
+                const query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'7 days\' ORDER BY TIMESTAMP');
                 break;
             case '30days':
-                const query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'1 month\'');
+                const query = client.query('SELECT * FROM environmental WHERE timestamp > current_date - INTERVAL \'1 month\' ORDER BY TIMESTAMP');
                 break;
             case 'curmonth':
-                const query = client.query('SELECT * FROM environmental WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)');
+                const query = client.query('SELECT * FROM environmental WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date) ORDER BY TIMESTAMP');
                 break;
             case 'lastmonth':
-                const query = client.query('SELECT * FROM environmental WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date)');
+                const query = client.query('SELECT * FROM environmental WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp <  date_trunc(\'month\', current_date) ORDER BY TIMESTAMP');
                 break;
             // case 'custom':
                     // const query = client.query('SELECT * FROM environmental WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'');

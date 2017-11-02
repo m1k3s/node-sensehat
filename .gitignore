@@ -1,2 +1,8 @@
 node_modules/
 systemd/
+*.bak
+*.new
+*.latest
+*.tabs
+buttonFunctions.js
+tabs.js
