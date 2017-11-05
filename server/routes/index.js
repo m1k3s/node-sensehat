@@ -10,28 +10,28 @@ function buildQuery(table, range) {
     var query = [];
     switch (range) {
         case 'today':
-            query = 'SELECT * FROM ' + table + ' WHERE timestamp > TIMESTAMP \'today\'';
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > TIMESTAMP \'today\' ORDER BY timestamp ASC';
             break;
         case 'yesterday':
-                query = 'SELECT * FROM ' + table + ' WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\'';
+                query = 'SELECT * FROM ' + table + ' WHERE timestamp > TIMESTAMP \'yesterday\' AND timestamp < TIMESTAMP \'today\' ORDER BY timestamp ASC';
                 break;
         case '7days':
-            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'7 days\'';
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'7 days\' ORDER BY timestamp ASC';
             break;
         case '30days':
-            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'1 month\'';
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'1 month\' ORDER BY timestamp ASC';
             break;
         case 'curmonth':
-            query = 'SELECT * FROM ' + table + ' WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date)';
+            query = 'SELECT * FROM ' + table + ' WHERE date_trunc(\'month\', timestamp) = date_trunc(\'month\', current_date) ORDER BY timestamp ASC';
             break;
         case 'lastmonth':
-            query = 'SELECT * FROM ' + table + ' WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp < date_trunc(\'month\', current_date)';
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp >= date_trunc(\'month\', current_date - INTERVAL \'1 month\') AND timestamp < date_trunc(\'month\', current_date) ORDER BY timestamp ASC';
                 break;
             case 'last2months':
-            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'2 months\'';
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'2 months\' ORDER BY timestamp ASC';
             break;
         case 'last3months':
-            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'3 months\'';
+            query = 'SELECT * FROM ' + table + ' WHERE timestamp > current_date - INTERVAL \'3 months\' ORDER BY timestamp ASC';
             break;
         // case 'custom':
             // query = 'SELECT * FROM ' + table + ' WHERE timestamp BETWEEN \'2017-06-01\' AND \'2017-06-03\'';

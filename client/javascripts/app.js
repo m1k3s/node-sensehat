@@ -57,7 +57,6 @@ app.service('diskstatsService', function ($http) {
     return { getDiskStats: getDiskStats };
 });
 
-// retrieve 5 days (480 rows) of data for default view
 app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, netstatsService, diskstatsService) {
     $scope.data0 = [];
     $scope.isLoaded0 = false;
@@ -87,12 +86,12 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 row.timestamp = new Date(row.timestamp);
                 // this can probably be removed once we move beyond the 5 day point
                 // HACK ALERT: making some serious assumptions here...
-                if (row.calibrated_temp > 60.0) {
-                    row.calibrated_temp = ((row.calibrated_temp - 32.0) * 0.55556).toFixed(1);
-                }
-                if (row.cpu_temp > 65.0) {
-                    row.cpu_temp = ((row.cpu_temp - 32.0) * 0.55556).toFixed(1);
-                }
+                //if (row.calibrated_temp > 60.0) {
+                //    row.calibrated_temp = ((row.calibrated_temp - 32.0) * 0.55556).toFixed(1);
+                //}
+                //if (row.cpu_temp > 65.0) {
+                //    row.cpu_temp = ((row.cpu_temp - 32.0) * 0.55556).toFixed(1);
+                //}
             });
             $scope.isLoaded0 = true;
         }, function() {
@@ -150,6 +149,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 axes: 'y',
                 dataset: 'data',
                 key: 'cpu_temp',
+                padding: {min: 5, max: 10},
                 defined: function(value) {
                     return value.y1 != undefined;
                 },
@@ -163,6 +163,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 axes: 'y',
                 dataset: 'data',
                 key: 'raw_temp',
+                padding: {min: 5, max: 10},
                 defined: function(value) {
                     return value.y1 != undefined;
                 },
@@ -176,6 +177,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 axes: 'y',
                 dataset: 'data',
                 key: 'calibrated_temp',
+                padding: {min: 5, max: 10},
                 defined: function(value) {
                     return value.y1 != undefined;
                 },
@@ -238,6 +240,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
             {
                 axes: 'y',
                 dataset: 'data',
+                padding: {min: 5, max: 10},
                 key: 'humidity',
                 defined: function(value) {
                     return value.y1 != undefined;
@@ -299,6 +302,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 axes: 'y',
                 dataset: 'data',
                 key: 'pressure',
+                padding: {min: 5, max: 10},
                 defined: function(value) {
                     return value.y1 != undefined;
                 },
@@ -361,6 +365,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 axes: 'y',
                 dataset: 'data',
                 key: 'la1',
+                padding: {min: 5, max: 10},
                 defined: function(value) {
                      return value.y1 != undefined;
                 },
@@ -374,6 +379,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 axes: 'y',
                 dataset: 'data',
                 key: 'la5',
+                padding: {min: 5, max: 10},
                 defined: function(value) {
                      return value.y1 != undefined;
                 },
@@ -387,6 +393,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 axes: 'y',
                 dataset: 'data',
                 key: 'la15',
+                padding: {min: 5, max: 10},
                 defined: function(value) {
                      return value.y1 != undefined;
                 },
@@ -436,6 +443,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                axes: 'y',
                dataset: 'data',
                key: 'tx_rate',
+               padding: {min: 5, max: 10},
                defined: function(value) {
                     return value.y1 != undefined;
                },
@@ -511,6 +519,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                axes: 'y',
                dataset: 'data',
                key: 'wbytes',
+               padding: {min: 5, max: 10},
                defined: function(value) {
                     return value.y1 != undefined;
                },

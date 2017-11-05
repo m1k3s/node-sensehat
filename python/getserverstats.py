@@ -3,6 +3,7 @@
 from sense_hat import SenseHat
 import psycopg2
 import os
+import sys
 import subprocess
 import psutil
 from time import sleep
@@ -137,57 +138,61 @@ def loadAvgs() :
 #print(os.environ.get('SQLDBPWD', 'pwd not found'))
 #print(os.environ.get('SQLDBNAME', 'name not found'))
 
-# database access vars
-hostname = 'localhost'
-username = os.environ.get('SQLDBUSER', '') 
-password = os.environ.get('SQLDBPWD', '')
-database = os.environ.get('SQLDBNAME', '')
+def main():
+    # database access vars
+    hostname = 'localhost'
+    username = os.environ.get('SQLDBUSER', '') 
+    password = os.environ.get('SQLDBPWD', '')
+    database = os.environ.get('SQLDBNAME', '')
 
-sense = SenseHat()
+    sense = SenseHat()
 
-traffic = networkStats()
-env = sensehatData(sense)
-loadavg = loadAvgs()
-disk = diskIOStats()
+    traffic = networkStats()
+    env = sensehatData(sense)
+    loadavg = loadAvgs()
+    disk = diskIOStats()
 
-# try to get a db connection and post the data
-try:
-    conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database)
-    conn.autocommit = True
-    cur = conn.cursor()
-except:
-    print("cannot connect to the {0} database".format(database))
- 
-post_env(cur, env[0], env[1], env[2], env[3], env[4])
-post_loadavg(cur, loadavg[0], loadavg[1], loadavg[2])
-# long way around getting the flow rate
-# post the current readings returning the id
-idx = post_netstats(cur, traffic[0], traffic[1], traffic[2], traffic[3], 0, 0)
-if idx > 1:
-    # get the previous row to subtract from
-    prev = query_netstats(cur, idx - 1)
-    #          0          1           2           3             4             5
-    # prev = [id, timestamp, bytes_sent, bytes_recv, packets_sent, packets_recv, tx_rate, rx_rate]
-    # now update the tx_rate and rx_rate columns
-    # handle wrap and reboot cases
-    tx_rate = traffic[0] if traffic[0] - prev[2] < 0 else traffic[0] - prev[2]
-    rx_rate = traffic[1] if traffic[1] - prev[3] < 0 else traffic[1] - prev[3]    
-    update_netstats(cur, idx, tx_rate, rx_rate)
+    # try to get a db connection and post the data
+    try:
+        conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database)
+        conn.autocommit = True
+        cur = conn.cursor()
+    except:
+        print("cannot connect to the {0} database".format(database))
+     
+    post_env(cur, env[0], env[1], env[2], env[3], env[4])
+    post_loadavg(cur, loadavg[0], loadavg[1], loadavg[2])
+    # long way around getting the flow rate
+    # post the current readings returning the id
+    idx = post_netstats(cur, traffic[0], traffic[1], traffic[2], traffic[3], 0, 0)
+    if idx > 1:
+        # get the previous row to subtract from
+        prev = query_netstats(cur, idx - 1)
+        #          0          1           2           3             4             5
+        # prev = [id, timestamp, bytes_sent, bytes_recv, packets_sent, packets_recv, tx_rate, rx_rate]
+        # now update the tx_rate and rx_rate columns
+        # handle wrap and reboot cases
+        tx_rate = traffic[0] if traffic[0] - prev[2] < 0 else traffic[0] - prev[2]
+        rx_rate = traffic[1] if traffic[1] - prev[3] < 0 else traffic[1] - prev[3]    
+        update_netstats(cur, idx, tx_rate, rx_rate)
 
-# do the same for the disk stats
-idx = post_diskstats(cur, disk[0], disk[1], 0, 0)
-if idx > 1:
-    prev_disk = query_diskstats(cur, idx - 1)
-    #               0          1           2            3       
-    # prev_disk = [id, timestamp, read_bytes, write_bytes, rbytes, wbytes]
-    rbytes = disk[0] if disk[0] - prev_disk[2] < 0 else disk[0] - prev_disk[2]
-    wbytes = disk[1] if disk[1] - prev_disk[3] < 0 else disk[1] - prev_disk[3]
-    update_diskstats(cur, idx, rbytes, wbytes)
+    # do the same for the disk stats
+    idx = post_diskstats(cur, disk[0], disk[1], 0, 0)
+    if idx > 1:
+        prev_disk = query_diskstats(cur, idx - 1)
+        #               0          1           2            3       
+        # prev_disk = [id, timestamp, read_bytes, write_bytes, rbytes, wbytes]
+        rbytes = disk[0] if disk[0] - prev_disk[2] < 0 else disk[0] - prev_disk[2]
+        wbytes = disk[1] if disk[1] - prev_disk[3] < 0 else disk[1] - prev_disk[3]
+        update_diskstats(cur, idx, rbytes, wbytes)
 
-conn.close()
+    conn.close()
 
-h = time.localtime(time.time()).tm_hour
-if h >= 6 and h <= 20:
-    # play the lights
-    lights(sense)
+    h = time.localtime(time.time()).tm_hour
+    if h >= 6 and h <= 20:
+        # play the lights
+        lights(sense)
+
+if __name__ == "__main__":
+    sys.exit(main())
 
