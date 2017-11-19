@@ -249,7 +249,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 color: '#00cd00',
                 type: ['line', 'area'],
                 id: 'Series1',
-                interpolation: {mode: 'cardinal', tension: 0.7}
+                interpolation: {mode: 'basis'}
             }
         ],
         grid: {

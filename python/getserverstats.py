@@ -8,34 +8,8 @@ import subprocess
 import psutil
 from time import sleep
 import time
-
-# fun with the LED matrix
-def lights(s) :
-    r = [255, 0, 0]
-    y = [255, 255, 0]
-    g = [0, 255, 0]
-    b = [0, 0, 255]
-
-    image = [
-        b, b, b, b, r, r, r, r,
-        b, b, b, b, r, r, r, r,
-        b, b, b, b, r, r, r, r,
-        b, b, b, b, r, r, r, r,
-        y, y, y, y, g, g, g, g,
-        y, y, y, y, g, g, g, g,
-        y, y, y, y, g, g, g, g,
-        y, y, y, y, g, g, g, g
-    ]
-    s.set_pixels(image)
-    s.low_light = True
-
-    angles = [0, 90, 180, 270, 0, 90, 180, 270, 0]
-    for r in angles :
-        s.set_rotation(r)
-        sleep(0.25)
-
-    sleep(0.5)
-    s.clear()
+from random import randint
+from lightshow import sparkle, lights
 
 # insert sensehat data into the database
 def post_env(cur, cal_t, h, p, cpu_t, raw_t) :
@@ -191,7 +165,10 @@ def main():
     h = time.localtime(time.time()).tm_hour
     if h >= 6 and h <= 20:
         # play the lights
-        lights(sense)
+        if randint(0, 5) is 3:
+            lights(sense)
+        else:
+            sparkle(sense)
 
 if __name__ == "__main__":
     sys.exit(main())
