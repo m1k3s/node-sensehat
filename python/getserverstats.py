@@ -9,7 +9,7 @@ import psutil
 from time import sleep
 import time
 from random import randint
-from lightshow import sparkle, lights
+from lightshow import sparkle, lights, chase
 
 # insert sensehat data into the database
 def post_env(cur, cal_t, h, p, cpu_t, raw_t) :
@@ -165,10 +165,13 @@ def main():
     h = time.localtime(time.time()).tm_hour
     if h >= 6 and h <= 20:
         # play the lights
-        if randint(0, 5) is 3:
+        res = randint(0, 5)
+        if res is 3:
             lights(sense)
-        else:
+        elif res is 2:
             sparkle(sense)
+        else:
+            chase(sense)
 
 if __name__ == "__main__":
     sys.exit(main())

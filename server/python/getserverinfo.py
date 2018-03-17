@@ -21,10 +21,10 @@ fifteen = load[2]
 
 info = os.uname()
 
-sys = info[0]
-node = info[1]
-kernel = info[2]
-march = info[4]
+sys = info.sysname
+node = info.nodename
+kernel = info.release
+march = info.machine
 
 with open('/proc/uptime', 'r') as f:
     uptime_seconds = float(f.readline().split()[0])

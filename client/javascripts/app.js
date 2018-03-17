@@ -84,6 +84,9 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
             $scope.data0 = response;
             $scope.data0.data.forEach(function(row) {
                 row.timestamp = new Date(row.timestamp);
+                if (row.humidity < 0.0) {
+                    row.humidity = 0.0;
+                }
                 // this can probably be removed once we move beyond the 5 day point
                 // HACK ALERT: making some serious assumptions here...
                 //if (row.calibrated_temp > 60.0) {
@@ -249,7 +252,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 color: '#00cd00',
                 type: ['line', 'area'],
                 id: 'Series1',
-                interpolation: {mode: 'basis'}
+                interpolation: {mode: 'cardinal', tension: 0.7}
             }
         ],
         grid: {
