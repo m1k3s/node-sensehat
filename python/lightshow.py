@@ -112,3 +112,36 @@ def chase(sense):
     sleep(0.10)
     sense.clear()
 
+def rainbow(sense):
+    r = [255, 0, 0]
+    o = [255, 127, 0]
+    y = [255, 255, 0]
+    g = [0, 255, 0]
+    b = [0, 0, 255]
+    i = [75, 0, 130]
+    v = [159, 0, 255]
+    #e = [0, 0, 0]
+  
+    image = [
+        g, g, y, y, y, o, r, r,
+        g, y, y, y, o, r, r, v,
+        y, y, y, o, r, r, v, v,
+        y, y, o, r, r, v, v, i,
+        y, o, r, r, v, v, i, i,
+        o, r, r, v, v, i, i, b,
+        r, r, v, v, i, i, b, b,
+        r, v, v, i, i, b, b, b
+    ]
+  
+    sense.set_pixels(image)
+    sense.low_light = True
+
+    angles = [0, 90, 180, 270, 0 , 90, 180, 270, 0]
+    for r in angles:
+        sense.set_rotation(r)
+        sleep(0.25)
+
+    sleep(0.25)
+    sense.clear()
+
+

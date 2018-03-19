@@ -9,7 +9,7 @@ import psutil
 from time import sleep
 import time
 from random import randint
-from lightshow import sparkle, lights, chase
+from lightshow import sparkle, lights, chase, rainbow
 
 # insert sensehat data into the database
 def post_env(cur, cal_t, h, p, cpu_t, raw_t) :
@@ -170,6 +170,8 @@ def main():
             lights(sense)
         elif res is 2:
             sparkle(sense)
+        elif res is 1:
+            rainbow(sense)
         else:
             chase(sense)
 
