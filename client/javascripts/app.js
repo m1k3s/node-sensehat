@@ -445,6 +445,19 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
            {
                axes: 'y',
                dataset: 'data',
+               key: 'rx_rate',
+               defined: function(value) {
+                    return value.y1 != undefined;
+               },
+               label: 'RX Bytes/15 minutes',
+               color: '#e066ff',
+               type: ['line', 'area'],
+               id: 'Series7',
+               interpolation: {mode: 'step'}
+           },
+           {
+               axes: 'y',
+               dataset: 'data',
                key: 'tx_rate',
                padding: {min: 5, max: 10},
                defined: function(value) {
@@ -454,19 +467,6 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                color: '#20b2aa',
                type: ['line', 'area'],
                id: 'Series6',
-               interpolation: {mode: 'step'}
-           },
-           {
-               axes: 'y',
-               dataset: 'data',
-               key: 'rx_rate',
-               defined: function(value) {
-                    return value.y1 != undefined;
-               },
-               label: 'RX Bytes/15 minutes',
-               color: '#e066ff',
-               type: ['line', 'area'],
-               id: 'Series7',
                interpolation: {mode: 'step'}
            }
         ],

@@ -6,6 +6,7 @@ import os
 import sys
 import subprocess
 import psutil
+import numpy as np
 from time import sleep
 import time
 from random import randint
@@ -90,18 +91,29 @@ def networkStats() :
 
     return (txbytes, rxbytes, txpackets, rxpackets)
 
+# correct relative humidty for calibrated temperature
+def rh_correction(rh, th) :
+    td = th - ((100 - rh) / 5.0) # dew point
+    es = 6.11 * np.power(10.0, 7.5 * th / (237.7 + th))
+    e = 6.11 * np.power(10.0, 7.5 * td / (237.7 + td))
+    return ((e / es) * 100)
+
 def sensehatData(s) :
-    tc = s.get_temperature()
-    h = s.get_humidity()
+    tc = (s.get_temperature_from_pressure() + s.get_temperature_from_humidity()) / 2
+    rh = s.get_humidity()
+    h = rh_correction(rh, tc)
     p = s.get_pressure()
 
     # calibrate temperature
-    cpu_temp = subprocess.check_output("/opt/vc/bin/vcgencmd measure_temp", shell=True)
-    cpu_tempc = float(cpu_temp.decode("utf-8").replace("temp=","").replace("'C\n",""))
+    #cpu_temp = subprocess.check_output("/opt/vc/bin/vcgencmd measure_temp", shell=True)
+    #cpu_tempc = float(cpu_temp.decode("utf-8").replace("temp=","").replace("'C\n",""))
+    output = subprocess.check_output("cat /sys/class/thermal/thermal_zone0/temp", shell=True)
+    cpu_tempc = int(output) / 1000
     # calibrate the temperature reading
     # temp_calibrated = (tempC - (cpu_tempC - tempC) / FACTOR) where FACTOR has to be arrived at
     # trial and error. Or by using another temperature sensor not affected by the cpu heat.
-    t_cal = (tc - (cpu_tempc - tc)/1.1)
+    #t_cal = (tc - (cpu_tempc - tc) / 1.1)
+    t_cal = (tc - (cpu_tempc - tc)) * 0.90
 
     return (round(t_cal, 1), round(h, 1), round(p, 1), round(cpu_tempc, 1), round(tc, 1))
 
