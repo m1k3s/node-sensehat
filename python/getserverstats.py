@@ -110,10 +110,10 @@ def sensehatData(s) :
     output = subprocess.check_output("cat /sys/class/thermal/thermal_zone0/temp", shell=True)
     cpu_tempc = int(output) / 1000
     # calibrate the temperature reading
-    # temp_calibrated = (tempC - (cpu_tempC - tempC) / FACTOR) where FACTOR has to be arrived at
+    # temp_calibrated = tempC - ((cpu_tempC - tempC) / FACTOR) where FACTOR has to be arrived at
     # trial and error. Or by using another temperature sensor not affected by the cpu heat.
     #t_cal = (tc - (cpu_tempc - tc) / 1.1)
-    t_cal = (tc - (cpu_tempc - tc)) * 0.90
+    t_cal = (tc - (cpu_tempc - tc)) * 0.75
 
     return (round(t_cal, 1), round(h, 1), round(p, 1), round(cpu_tempc, 1), round(tc, 1))
 

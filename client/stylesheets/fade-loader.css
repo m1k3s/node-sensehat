@@ -30,7 +30,7 @@ div.loading {
     content:" ";
     margin: 10%;    /* stroke width */
     border-radius: 100%;
-    background: #ccc;    /* container background */
+    background: #000;    /* container background */
 }
 /* Spinning gradients */
 .inner {

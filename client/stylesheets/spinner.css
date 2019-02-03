@@ -44,7 +44,7 @@ div.spinner {
 }
 
 .spinner:after {
-	background: #ccc;
+	background: #000;
 	border-radius: 50%;
 	top: 6%;
 	bottom: 6%;

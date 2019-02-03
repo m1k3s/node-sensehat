@@ -10,7 +10,7 @@ html, body {
 body {
     font: 14px/1 'Open Sans', sans-serif;
     color: #555;
-    background: #ccc;
+    background: #000;
 }
 
 a {
@@ -37,10 +37,10 @@ a {
 /* adjust the line thickness of all charts */
 .chart
 .line-series path {
-    stroke-width: 1px;
+    stroke-width: 2px;
 }
 
-/*.chart {
+.chart {
     background: #000;
 }
 
@@ -51,7 +51,16 @@ a {
 .chart .axis path {
     stroke: white;
 }
-*/
+
+.chart .grid .tick > line {
+    stroke: lightgrey;
+    opacity: 0.5;
+}
+
+.chart .grid > path {
+    stroke-width: 0;
+}
+
 /* line thickness for the network and disk stats chart */
 /*#netstats
 .line-series path {
@@ -94,7 +103,7 @@ img {
 div.polaroid {
     width: 24.99999%;
     display: inline-block;
-    background-color: white;
+    background-color: #ccc;
     -webkit-filter: drop-shadow(8px 8px 10px rgba(0, 0, 0, 0.9));
     filter: drop-shadow(8px 8px 10px rgba(0, 0, 0, 0.9));
     padding: 5px;
@@ -124,9 +133,21 @@ h1.colorful2 {
     -webkit-text-fill-color: transparent;
 }
 
+h4.colorful4 {
+    display: table;
+    margin: 0 auto;
+    font-size: 1em;
+    font-weight: bold;
+    background: -webkit-linear-gradient(to left, #ff1493, #8b0000);
+    background: linear-gradient(310deg, #ff1493, #8b0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 div.data-rows {
     text-align: center;
     margin: 0 auto;
+    color: #ddd;
 }
 
 p.waiting {
@@ -147,9 +168,9 @@ div.serverinfo {
     text-align: center;
     padding: 10px 20px;
     /*color: #1e90ff;*/
-    border-style: inset;
+    /*border-style: inset;*/
     /*background: #191970;*/
-    background: #fff;
+    background: #000;
 }
 
 .clearfix:after {
@@ -161,13 +182,14 @@ div.serverinfo {
 select {
     width: 120px;
     padding: 4px 6px;
-    background: transparent;
+    background: #555;
     border: 1px solid #ccc;
+    color: white;
 }
 
 div.explanation {
     text-align: justify;
-    color: black;
+    color: #ccc;
     font-family: Monospace;
     font-size: 1.5em;
     margin: auto;
@@ -204,7 +226,7 @@ div.explanation {
 
 div.information {
     text-align: center;
-    color: #8b0000;
+    color: #dd0000;
     font-family: Monospace;
     font-size: 1.5em;
     font-weight: bold;
@@ -224,7 +246,7 @@ div.hostname {
 
 div.author {
     text-align: center;
-    color: #000;
+    color: #ff1493;
     font-family: Monospace;
     font-size: 1em;
     font-weight: bold;
@@ -243,12 +265,12 @@ div.author {
     min-width: 320px; 
     max-width: 100%;
     text-align: center;
-    background: #fff;
-    border-style: inset;
+    background: #000;
+    /*border-style: inset;*/
 }
 
 .content {
-    color: black;
+    color: #ccc;
     width: 100%;
 }
 
@@ -268,8 +290,9 @@ label {
     padding: 15px 25px; 
     font-weight: 600; 
     text-align: center;
-    color: #bbb;
-    border: 1px solid transparent;
+    color: #fff;
+    border: 1px solid #666;
+    border-bottom: 1px solid transparent;
 }
 
 label:before {
@@ -309,12 +332,12 @@ label[for*='6']:before {
 }
 
 label:hover {
-    color: #888; 
+    color: #ff1493; 
     cursor: pointer;
 }
 
 input:checked + label {
-    color: #555;
+    color: #fff;
     border: 1px solid #ddd;
     border-top: 2px solid #ff1493;
     border-bottom: 1px solid #fff;

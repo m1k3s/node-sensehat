@@ -13,7 +13,7 @@ logMap.set('1e+7', '10M');
 logMap.set('1e+8', '100M');
 logMap.set('1e+9', '1G');
 
-// format the axis labels to human readable form
+// format the network and disk axis labels to human readable form
 function getFormat(n) {
     let result = (n >= 1000000 ? (n / 1048576).toFixed(2) + ' MBytes' :
     n < 1000 ? n.toFixed(2) + ' Bytes':
@@ -152,43 +152,46 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 axes: 'y',
                 dataset: 'data',
                 key: 'cpu_temp',
-                padding: {min: 5, max: 10},
+                padding: {min: 15, max: 20},
                 defined: function(value) {
                     return value.y1 != undefined;
                 },
                 label: 'CPU',
-                color: '#00ff00',
-                type: ['line', 'area'],
+                color: '#ff0000',
+                type: ['line'], //'area'],
                 id: 'Series0a',
-                interpolation: {mode: 'cardinal', tension: 0.7}
+                //interpolation: {mode: 'cardinal', tension: 0.7}
+                interpolation: { mode: 'monotone' }
             },
             {
                 axes: 'y',
                 dataset: 'data',
                 key: 'raw_temp',
-                padding: {min: 5, max: 10},
+                padding: {min: 15, max: 20},
                 defined: function(value) {
                     return value.y1 != undefined;
                 },
                 label: 'Raw',
-                color: '#0000ff',
-                type: ['line', 'area'],
+                color: '#00ccff',
+                type: ['line'], //, 'area'],
                 id: 'Series0b',
-                interpolation: {mode: 'cardinal', tension: 0.7}
+                //interpolation: {mode: 'cardinal', tension: 0.7}
+                interpolation: { mode: 'monotone' }
             },
             {
                 axes: 'y',
                 dataset: 'data',
                 key: 'calibrated_temp',
-                padding: {min: 5, max: 10},
+                padding: {min: 15, max: 20},
                 defined: function(value) {
                     return value.y1 != undefined;
                 },
                 label: 'Calibrated',
-                color: '#ff0000',
-                type: ['line', 'area'],
+                color: '#00ff00',
+                type: ['line'], //, 'area'],
                 id: 'Series0',
-                interpolation: {mode: 'cardinal', tension: 0.7}
+                //interpolation: {mode: 'cardinal', tension: 0.7}
+                interpolation: { mode: 'monotone' }
             }
         ],
         grid: { 
@@ -250,9 +253,24 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 },
                 label: 'Humidity',
                 color: '#00cd00',
-                type: ['line', 'area'],
-                id: 'Series1',
-                interpolation: {mode: 'cardinal', tension: 0.7}
+                type: ['line'],// 'area'],
+                id: 'Series1a',
+                //interpolation: {mode: 'cardinal', tension: 0.7}
+                interpolation: { mode: 'monotone' }
+            },
+            {
+                axes: 'y',
+                dataset: 'data',
+                padding: {min: 5, max: 10},
+                key: 'humidity',
+                defined: function(value) {
+                    return value.y1 != undefined;
+                },
+                label: 'Smoothed',
+                color: '#cd0000',
+                type: ['line'],
+                id: 'Series1b',
+                interpolation: {mode: 'basis'}
             }
         ],
         grid: {
@@ -285,7 +303,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 abscissas: d[0].row.x.toTimeString(),
                 rows: d.map(function(s) {
                     return {
-                        label: '',
+                        label: s.series.label,
                         value: s.row.y1 + '%RH',
                         color: s.series.color,
                         id: s.series.id
@@ -311,9 +329,25 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 },
                 label: 'Pressure',
                 color: '#1e90ff',
-                type: ['line', 'area'],
-                id: 'Series2',
-                interpolation: {mode: 'cardinal', tension: 0.7}
+                type: ['line'],// 'area'],
+                id: 'Series2a',
+                //interpolation: {mode: 'cardinal', tension: 0.7}
+                //interpolation: { mode: 'monotone' }
+            },
+            {   
+                axes: 'y',
+                dataset: 'data',
+                key: 'pressure',
+                padding: {min: 5, max: 10},
+                defined: function(value) {
+                    return value.y1 != undefined;
+                },
+                label: 'Smoothed',
+                color: '#fe0000',
+                type: ['line'],// 'area'],
+                id: 'Series2b',
+                //interpolation: {mode: 'cardinal', tension: 0.7}
+                interpolation: { mode: 'basis' }
             }
         ],
         grid: {
@@ -347,7 +381,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                     rows: d.map(function(s) {
                         let n = parseFloat(s.row.y1);
                         return {
-                            label: '',
+                            label: s.series.label,
                             value: n.toFixed(1) + ' hPa (' + (n * 0.0295301).toFixed(2) + ' Hg)',
                             color: s.series.color,
                             id: s.series.id
@@ -377,6 +411,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 type: ['line', 'area'],
                 id: 'Series3',
                 interpolation: {mode: 'cardinal', tension: 0.7}
+                //interpolation: { mode: 'monotone' }
             },
             {
                 axes: 'y',
@@ -391,6 +426,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 type: ['line', 'area'],
                 id: 'Series4',
                 interpolation: {mode: 'cardinal', tension: 0.7}
+                //interpolation: { mode: 'monotone' }
             },
             {
                 axes: 'y',
@@ -405,6 +441,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                 type: ['line', 'area'],
                 id: 'Series5',
                 interpolation: {mode: 'cardinal', tension: 0.7}
+                //interpolation: { mode: 'monotone' }
             }
 
         ],
@@ -451,7 +488,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                },
                label: 'RX Bytes/15 minutes',
                color: '#e066ff',
-               type: ['line', 'area'],
+               type: ['line'],// 'area'],
                id: 'Series7',
                interpolation: {mode: 'step'}
            },
@@ -465,7 +502,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                },
                label: 'TX Bytes/15 minutes',
                color: '#20b2aa',
-               type: ['line', 'area'],
+               type: ['line'],// 'area'],
                id: 'Series6',
                interpolation: {mode: 'step'}
            }
@@ -528,7 +565,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                },
                label: 'Write Bytes/15 minutes',
                color: '#7ccd7c',
-               type: ['line', 'area'],
+               type: ['line'],// 'area'],
                id: 'Series8',
                interpolation: {mode: 'step'}
            },
@@ -541,7 +578,7 @@ app.controller('rpi3Ctrl', function($scope, sensorDataService, loadAvgService, n
                },
                label: 'Read Bytes/15 minutes',
                color: '#ff5400',
-               type: ['line', 'area'],
+               type: ['line'], //'area'],
                id: 'Series9',
                interpolation: {mode: 'step'}
            }
